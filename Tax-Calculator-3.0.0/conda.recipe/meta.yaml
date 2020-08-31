@@ -1,0 +1,35 @@
+package:
+  name: taxcalc
+  version: 0.0.0
+
+build:
+  entry_points:
+    - tc = taxcalc.cli.tc:cli_tc_main
+
+requirements:
+  build:
+    - python
+    - "numpy>=1.14"
+    - "pandas>=1.1.0"
+    - "bokeh>=1.4.0"
+    - requests
+    - numba
+    - paramtools
+
+  run:
+    - python
+    - "numpy>=1.14"
+    - "pandas>=1.1.0"
+    - "bokeh>=1.4.0"
+    - requests
+    - numba
+    - paramtools
+
+test:
+  commands:
+    - which tc  # [unix]
+    - where tc  # [win]
+    - tc --help
+
+about:
+  home: https://github.com/PSLmodels/Tax-Calculator
