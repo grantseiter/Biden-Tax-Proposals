@@ -1,0 +1,32 @@
+// Title: Biden 2020 proposals (that have an effect on saving)
+// Reform_File_Author: Erin Melly
+// Reform_Baseline: policy_current_law.json
+
+//	 - Reform_Parameter_Map (for 2020 through 2025):
+//   1: Repeal TCJA for households with income over $400,000:
+//      a. pre-TCJA levels for top income and pass through brackets/rates restored to pre-TCJA)
+//      b. repeal section 199A for top bracket) (phasing this cap out)
+//      c. Add Pease Limitation (pre-TCJA)
+//   2: Tax capital gains as ordinary income for taxpayers with income over $1 million
+//   3. Limit itemized dedcutions 
+
+{
+	"II_brk5": {"2020": [416700.00, 416700.00, 208350.00, 416700.00, 416700.00]},
+	"II_rt5": {"2020": 0.33},
+    "II_brk6": {"2020": [418400.00, 470700.00, 235350.00, 444550.00, 470700.00]},
+    "II_rt7": {"2020": 0.396},
+    "PT_brk5": {"2020": [416700.00, 416700.00, 208350.00, 416700.00, 416700.00]},
+    "PT_rt5": {"2020": 0.33},
+    "PT_brk6": {"2020": [418400.00, 470700.00, 235350.00, 444550.00, 470700.00]},
+    "PT_rt7": {"2020": 0.396},
+    "PT_qbid_taxinc_thd": {"2020": [400000.00, 400000.00, 400000.00, 400000.00, 400000.00]},
+    "PT_qbid_taxinc_gap": {"2020": [100000.0, 100000.0, 100000.0, 100000.0, 100000.00]},
+    "ID_ps": {"2020": [261500.0, 313800.0, 156900.0, 287650.0, 313800.0]},
+    "ID_prt": {"2020": 0.03},
+    "ID_crt": {"2020": 0.8},
+    "CG_brk4": {"2020": [1000000, 1000000, 1000000, 1000000, 1000000]},
+    "CG_rt3": {"2020": 0.396},
+    "ID_BenefitSurtax_trt": {"2020": 1.0},
+    "ID_BenefitSurtax_crt": {"2020": 0.28},
+    "ID_BenefitSurtax_Switch": {"2020": [true, true, false, true, true, true, true]},
+}

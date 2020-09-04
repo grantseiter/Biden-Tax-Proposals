@@ -1,0 +1,16 @@
+// Title: Biden 2020 proposals (that have an effect on saving)
+// Reform_File_Author: Erin Melly
+// Reform_Baseline: policy_current_law.json
+
+//	 - Reform_Parameter_Map (for 2026 through 2030):
+//   1: Tax capital gains as ordinary income for taxpayers with income over $1 million
+//   2: Limit itemized deductions
+
+
+{
+	"CG_brk4": {"2026": [1000000, 1000000, 1000000, 1000000, 1000000]},
+    "CG_rt3": {"2026": 0.396},
+    "ID_BenefitSurtax_trt": {"2020": 1.0},
+    "ID_BenefitSurtax_crt": {"2020": 0.28},
+    "ID_BenefitSurtax_Switch": {"2020": [true, true, false, true, true, true, true]}
+}
