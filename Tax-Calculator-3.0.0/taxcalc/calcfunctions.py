@@ -310,12 +310,18 @@ def CapGains(p23250, p22250, sep, ALD_StudentLoan_hc,
              ALD_BusinessLosses_c, MARS,
              e00900, e01100, e01200, e01400, e01700, e02000, e02100,
              e02300, e00400, e02400, c02900, e03210, e03230, e03240,
-             c01000, c23650, ymod, ymod1, invinc_agi_ec):
+             c01000, c23650, ymod, ymod1, invinc_agi_ec,
+             gains_at_death, CG_death, CG_death_ec):
     """
     CapGains function: ...
     """
-    # net capital gain (long term + short term) before exclusion
-    c23650 = p23250 + p22250
+    # compute taxable portion of capital gains at death (gains_at_death - CG_death_ec)
+    if CG_death is True:
+      taxable_gains_at_death = max(0., gains_at_death - CG_death_ec[MARS-1])
+    else:
+      taxable_gains_at_death = 0.
+    # net capital gain (long term + short term + gains at death) before exclusion
+    c23650 = p23250 + p22250 + taxable_gains_at_death
     # limitation on capital losses
     c01000 = max((-3000. / sep), c23650)
     # compute total investment income
@@ -337,7 +343,8 @@ def CapGains(p23250, p22250, sep, ALD_StudentLoan_hc,
     ymod2 = e00400 + (0.50 * e02400) - c02900
     ymod3 = (1. - ALD_StudentLoan_hc) * e03210 + e03230 + e03240
     ymod = ymod1 + ymod2 + ymod3
-    return (c01000, c23650, ymod, ymod1, invinc_agi_ec)
+    return (c01000, c23650, ymod, ymod1, invinc_agi_ec,
+            gains_at_death, taxable_gains_at_death)
 
 
 @iterate_jit(nopython=True)
