@@ -11,7 +11,8 @@
 "rrstc": {
   "type": "float",
   "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
-  "form": {"2013-20??": "calculated variable"}
+  "form": {"2013-20??": "calculated variable"},
+  "availability": "taxdata_puf, taxdata_cps"
 },
 
 // records.py
