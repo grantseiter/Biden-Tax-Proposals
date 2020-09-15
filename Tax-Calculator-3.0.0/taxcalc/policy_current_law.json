@@ -7712,7 +7712,7 @@
         "section_2": "Tax Unrealized Capital Gains at Death",
         "indexable": false,
         "indexed": false,
-        "type": "real",
+        "type": "float",
         "value": [
             {
                 "year": 2013,
