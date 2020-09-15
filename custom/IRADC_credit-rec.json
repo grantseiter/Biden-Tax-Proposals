@@ -1,0 +1,17 @@
+// ===========================================================#
+// Title: "IRADC_credit-rec"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Refundable retirement savings credit"
+          "Input Variables: rrstc"
+// ===========================================================#
+
+// records_variables.json
+
+"rrstc": {
+  "type": "float",
+  "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
+  "form": {"2013-20??": "calculated variable"}
+},
+
+// records.py

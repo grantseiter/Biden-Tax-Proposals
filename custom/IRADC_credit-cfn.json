@@ -1,0 +1,36 @@
+// ===========================================================#
+// Title: "IRADC_credit-cfn"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Refundable retirement savings credit"
+// ===========================================================#
+
+@iterate_jit(nopython=True)
+def RefundableRetirementSavingsTaxCredit(e03150, e03300,
+                               IRADC_credit_c, IRADC_credit_rt,
+                               rptc_p, rptc_s, rrstc):
+    """
+    Computes refundable payroll tax credit amount.
+    """
+    # calculate refundable credit amount with phase-out
+    tot_retirement_contributions = e03150 + e03300
+    if IRADC_credit_rt > 0.:
+        rrstc = min(tot_retirement_contributions * IRADC_credit_rt, IRADC_credit_c)
+    else:
+        rrstc = 0.
+    return (rrstc)
+
+
+@iterate_jit(nopython=True)
+def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
+          c09200, payrolltax,
+          eitc, refund, iitax, combined, rrstc):
+    """
+    Computes final taxes.
+    """
+    eitc = c59660
+    refund = (eitc + c11070 + c10960 +
+              personal_refundable_credit + ctc_new + rptc + rrstc)
+    iitax = c09200 - refund
+    combined = iitax + payrolltax
+    return (eitc, refund, iitax, combined)
