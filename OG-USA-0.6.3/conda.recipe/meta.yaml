@@ -1,0 +1,57 @@
+package:
+  name: ogusa
+  version: 0.5.13
+
+source:
+  path: ..
+
+requirements:
+  build:
+    - python
+    - "taxcalc>=2.4.2"
+    - "paramtools>=0.7.1"
+    - setuptools
+    - "scipy>=0.18.1"
+    - matplotlib
+    - "dask>=0.20.0"
+    - mkl
+    - requests
+
+  run:
+    - python
+    - "taxcalc>=2.4.2"
+    - "paramtools>=0.7.1"
+    - setuptools
+    - "scipy>=0.18.1"
+    - matplotlib
+    - "dask>=0.20.0"
+    - mkl
+    -requests
+
+about:
+  home: https://github.com/PSLmodels/OG-USA/
+
+test:
+  imports:
+    - ogusa
+    - ogusa.SS
+    - ogusa.TPI
+    - ogusa.aggregates
+    - ogusa.constants
+    - ogusa.demographics
+    - ogusa.elliptical_u_est
+    - ogusa.execute
+    - ogusa.firm
+    - ogusa.fiscal
+    - ogusa.get_micro_data
+    - ogusa.household
+    - ogusa.income
+    - ogusa.output_plots
+    - ogusa.output_tables
+    - ogusa.parameter_plots
+    - ogusa.parameter_tables
+    - ogusa.parameters
+    - ogusa.tax
+    - ogusa.txfunc
+    - ogusa.utils
+    - ogusa.wealth

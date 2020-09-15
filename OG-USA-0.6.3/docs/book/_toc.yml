@@ -1,0 +1,61 @@
+- file: content/intro/intro
+  numbered: false
+
+- part: Contributing to OG-USA
+  chapters:
+  - file: content/contributing/contributor_guide
+
+- part: OG-USA API
+  chapters:
+  - file: content/api/public_api
+    sections:
+      - file: content/api/aggregates
+      - file: content/api/demographics
+      - file: content/api/elliptical_u_est
+      - file: content/api/execute
+      - file: content/api/firm
+      - file: content/api/fiscal
+      - file: content/api/get_micro_data
+      - file: content/api/household
+      - file: content/api/income
+      - file: content/api/output_plots
+      - file: content/api/output_tables
+      - file: content/api/parameter_plots
+      - file: content/api/parameter_tables
+      - file: content/api/parameters
+      - file: content/api/tax
+      - file: content/api/txfunc
+      - file: content/api/utils
+      - file: content/api/wealth
+
+- part: OG-USA Theory
+  chapters:
+  - file: content/theory/intro
+  - file: content/theory/households
+  - file: content/theory/firms
+  - file: content/theory/government
+  - file: content/theory/market_clearing
+  - file: content/theory/stationarization
+  - file: content/theory/equilibrium
+  - file: content/theory/open_economy
+
+- part: Calibration
+  chapters:
+  - file: content/calibration/exogenous_parameters
+  - file: content/calibration/demographics
+  - file: content/calibration/earnings
+  - file: content/calibration/tax_functions
+  - file: content/calibration/bequests
+
+
+- part: Appendix
+  chapters:
+  - file: content/theory/derivations
+
+- part: References
+  chapters:
+  - file: content/theory/references
+
+- part: Citations of OG-USA
+  chapters:
+  - file: content/citations
