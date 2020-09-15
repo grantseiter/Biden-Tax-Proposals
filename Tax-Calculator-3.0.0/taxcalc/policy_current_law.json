@@ -14646,6 +14646,58 @@
             "cps": true
         }
     },
+    "IRADC_credit_c": {
+        "title": "Maximum refundable retirement savings credit",
+        "description": "This is the maximum amount of the refundable retirement savings tax credit ",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Refundable Credits",
+        "section_2": "Refundable Retirement Saving Credit",
+        "indexable": true,
+        "indexed": true,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "IRADC_credit_rt": {
+        "title": "Refundable retirement savings credit rate",
+        "description": "Percent of contributions to traditional IRAs and DC pensions given as a refundable credit",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Refundable Credits",
+        "section_2": "Refundable Retirement Saving Credit",
+        "indexable": false,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 1
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
     "LLC_Expense_c": {
         "title": "Lifetime learning credit expense limit",
         "description": "The maximum expense eligible for lifetime learning credit, per child.",

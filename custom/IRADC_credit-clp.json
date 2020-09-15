@@ -33,7 +33,7 @@
       }
   },
 
-"IRADC_credit_rt"{
+"IRADC_credit_rt": {
     "title": "Refundable retirement savings credit rate",
     "description": "Percent of contributions to traditional IRAs and DC pensions given as a refundable credit",
     "notes": "This parameter is not reflected in current law.",
