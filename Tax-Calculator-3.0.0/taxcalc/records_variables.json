@@ -647,6 +647,18 @@
       "desc": "Filing unit's share of total business property owned by the pass-through business",
       "form": {"2018-20??": "specified in custom data"},
       "availability": ""
+    },
+    "taxable_gains_at_death": {
+      "type": "float",
+      "desc": "Imputed taxable portion of capital gains at death",
+      "form": {"2021-20??": "imputed from JCT estimates in records.py"},
+      "availability": "taxdata_puf"
+    },
+    "gains_at_death": {
+      "type": "float",
+      "desc": "Imputed capital gains at death",
+      "form": {"2021-20??": "imputed from JCT estimates in records.py"},
+      "availability": "taxdata_puf"
     }
   },
   "calc": {

@@ -4,6 +4,8 @@
 // Date: "September 2020"
 // Notes: "Tax unrealized capital gains at death"
           "Input Variables: taxable_gains_at_death, gains_at_death"
+          "records_variables lines 651-662"
+          "records lines 343-360"
 // ===========================================================#
 
 // records_variables.json
@@ -19,21 +21,20 @@
   "desc": "Imputed capital gains at death",
   "form": {"2021-20??": "imputed from JCT estimates in records.py"},
   "availability": "taxdata_puf"
-},
+}
 
 // records.py
-
+# CAPITAL GAINS AT DEATH
 if year >= 2021:
-# create variables for capital gains at death
-    # taxpayers' share of capital gains
-    self.ltgains_weight = ((self.p23250 * self.s006) /
+    # TAXPAYERS' SHARE OF CAPITAL GAINS
+    self.ltgains_weight = ((self.p23250 * self.s006) / ## CHECK THIS LINE FOR DEBUGGING
                            np.sum(self.p23250 * self.s006))
     self.ltgains_weight[self.p23250 > 0] = (
         (self.p23250[self.p23250 > 0] * self.s006[self.p23250 > 0])
         / np.sum(self.p23250[self.p23250 > 0] *
                  self.s006[self.p23250 > 0]))
-    # assign total realization at death revenue to taxpayers based on ltgains_weight
-    # NOTE: values in dictionary are the JCT Tax Expenditure for Exclusion at death for capital gains / EMTR on cap gains
+    # ASSIGN TOTAL REALIZATION AT DEATH TO TAXPAYERS
+    # NOTE: VALUES ARE JCT CAP GAINS TAX EXPENDITURES FOR EXCLUSION AT DEATH/EMT
     realization_at_death = {
         2021: 204253570343, 2022: 215627184994,
         2023: 226688939254, 2024: 235220544654,
@@ -43,6 +44,3 @@ if year >= 2021:
     self.gains_at_death = ((
         self.ltgains_weight * realization_at_death[year]) /
                            (self.s006))
-
-    # remove local dictionary
-    del gfv
