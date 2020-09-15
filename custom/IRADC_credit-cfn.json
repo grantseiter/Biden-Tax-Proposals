@@ -3,6 +3,7 @@
 // File_Author: "Grant M. Seiter -- American Enterprise Institute"
 // Date: "September 2020"
 // Notes: "Refundable retirement savings credit"
+          "calcfunc lines 1378-1391 and  1743-1755"
 // ===========================================================#
 
 @iterate_jit(nopython=True)
@@ -10,9 +11,9 @@ def RefundableRetirementSavingsTaxCredit(e03150, e03300,
                                IRADC_credit_c, IRADC_credit_rt,
                                rptc_p, rptc_s, rrstc):
     """
-    Computes refundable payroll tax credit amount.
+    Computes refundable retirement savings tax credit amount.
     """
-    # calculate refundable credit amount with phase-out
+    # calculate refundable credit amount
     tot_retirement_contributions = e03150 + e03300
     if IRADC_credit_rt > 0.:
         rrstc = min(tot_retirement_contributions * IRADC_credit_rt, IRADC_credit_c)

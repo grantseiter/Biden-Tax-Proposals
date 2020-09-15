@@ -1375,6 +1375,21 @@ def PersonalTaxCredit(MARS, c00100,
         personal_nonrefundable_credit = max(0., fully_phasedout)
     return (personal_refundable_credit, personal_nonrefundable_credit)
 
+@iterate_jit(nopython=True)
+def RefundableRetirementSavingsTaxCredit(e03150, e03300,
+                               IRADC_credit_c, IRADC_credit_rt,
+                               rptc_p, rptc_s, rrstc):
+    """
+    Computes refundable retirement savings tax credit amount.
+    """
+    # calculate refundable credit amount 
+    tot_retirement_contributions = e03150 + e03300
+    if IRADC_credit_rt > 0.:
+        rrstc = min(tot_retirement_contributions * IRADC_credit_rt, IRADC_credit_c)
+    else:
+        rrstc = 0.
+    return (rrstc)
+
 
 @iterate_jit(nopython=True)
 def AmOppCreditParts(exact, e87521, num, c00100, CR_AmOppRefundable_hc,
@@ -1728,13 +1743,13 @@ def CTC_new(CTC_new_c, CTC_new_rt, CTC_new_c_under6_bonus,
 @iterate_jit(nopython=True)
 def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
           c09200, payrolltax,
-          eitc, refund, iitax, combined):
+          eitc, refund, iitax, combined, rrstc):
     """
     Computes final taxes.
     """
     eitc = c59660
     refund = (eitc + c11070 + c10960 +
-              personal_refundable_credit + ctc_new + rptc)
+              personal_refundable_credit + ctc_new + rptc + rrstc)
     iitax = c09200 - refund
     combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)
