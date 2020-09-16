@@ -343,7 +343,9 @@ class Records(Data):
         # CAPITAL GAINS AT DEATH
         if year >= 2021:
             # TAXPAYERS' SHARE OF CAPITAL GAINS
-            self.ltgains_weight[self.p23250 > 0] = (
+            self.ltgains_wt = ((self.p23250 * self.s006) /
+                                   np.sum(self.p23250 * self.s006))
+            self.ltgains_wt[self.p23250 > 0] = (
                 (self.p23250[self.p23250 > 0] * self.s006[self.p23250 > 0])
                 / np.sum(self.p23250[self.p23250 > 0] *
                          self.s006[self.p23250 > 0]))
@@ -356,7 +358,7 @@ class Records(Data):
                 2027: 254865207631, 2028: 264380671657,
                 2029: 274178230759, 2030: 284077457991}
             self.gains_at_death = ((
-                self.ltgains_weight * realization_at_death[year]) /
+                self.ltgains_wt * realization_at_death[year]) /
                                    (self.s006))
 
         
