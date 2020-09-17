@@ -660,7 +660,7 @@
       "form": {"2021-20??": "imputed from JCT estimates in records.py"},
       "availability": "taxdata_puf"
     },
-    "rrstc": {
+    "iradctc": {
       "type": "float",
       "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
       "form": {"2013-20??": "calculated variable"},
