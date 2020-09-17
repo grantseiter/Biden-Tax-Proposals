@@ -9,7 +9,7 @@
 
 // records_variables.json
 
-"rrstc": {
+"iradctc": {
   "type": "float",
   "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
   "form": {"2013-20??": "calculated variable"},
