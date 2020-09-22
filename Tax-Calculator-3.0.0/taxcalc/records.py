@@ -408,7 +408,7 @@ class Records(Data):
             # TAXPAYERS' SHARE OF FORGIVEN STUDENT LOANS
             self.studloan_wt = ((self.e03210 * self.s006) /
                                              np.sum(self.e03210 * self.s006))
-            self.studloan_wt[e03210 > 0] = (
+            self.studloan_wt[self.e03210 > 0] = (
                       (self.e03210[self.e03210 > 0] * self.s006[self.e03210 > 0])
                       / np.sum(self.e03210[self.e03210 > 0] *
                                 self.s006[self.e03210 > 0]))
