@@ -1398,6 +1398,17 @@ def IRADCTaxCredit(e03150, e03300, IRADC_credit_c, IRADC_credit_rt, iradctc):
         iradctc = 0.
     return (iradctc)
 
+@iterate_jit(nopython=True)
+def FTHBTaxCredit(FTHB_credit, fthbc):
+    """
+    Computes refundable first time homebuyers' tax credit amount.
+    """
+    # not reflected in current law and records modified with imputation
+    if FTHB_credit is True:
+      fthbc = max(0., fthb_credit_amt)
+    else:
+      fthbc = 0.
+    return (fthbc)
 
 @iterate_jit(nopython=True)
 def AmOppCreditParts(exact, e87521, num, c00100, CR_AmOppRefundable_hc,
@@ -1751,13 +1762,13 @@ def CTC_new(CTC_new_c, CTC_new_rt, CTC_new_c_under6_bonus,
 @iterate_jit(nopython=True)
 def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
           c09200, payrolltax,
-          eitc, refund, iitax, combined, iradctc):
+          eitc, refund, iitax, combined, iradctc, fthbc):
     """
     Computes final taxes.
     """
     eitc = c59660
     refund = (eitc + c11070 + c10960 +
-              personal_refundable_credit + ctc_new + rptc + iradctc)
+              personal_refundable_credit + ctc_new + rptc + iradctc + fthbc)
     iitax = c09200 - refund
     combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)

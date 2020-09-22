@@ -665,6 +665,18 @@
       "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
       "form": {"2013-20??": "calculated variable"},
       "availability": "taxdata_puf, taxdata_cps"
+    },
+    "fthbc": {
+    "type": "float",
+    "desc": "Refundable first time homebuyers' credit for taxpayer",
+    "form": {"2013-20??": "calculated variable"},
+    "availability": "taxdata_puf, taxdata_cps"
+    },
+    "fthb_credit_amt": {
+      "type": "float",
+      "desc": "Imputed first time homebuyers' credit",
+      "form": {"2021-20??": "imputed estimates in records.py"},
+      "availability": "taxdata_puf, taxdata_cps"
     }
   },
   "calc": {

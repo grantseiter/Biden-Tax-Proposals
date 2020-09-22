@@ -1,0 +1,142 @@
+// ===========================================================#
+// Title: "FTHB_credit"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "First time homebuyers' credit"
+          "Policy Parameters: FTHB_credit"
+          "Input Variables: fthbc, fthb_credit_amt"
+// ===========================================================#
+
+// policy_current_law.json // lines 14701-14726
+
+"FTHB_credit": {
+    "title": "First time homebuyers' credit estimates will be imputed to taxpayers",
+    "description": "Specifies whether or not estimates of the first time homebuyers' credit will be imputed to taxpayers.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Refundable Credits",
+    "section_2": "First Time Homebuyers' Credit",
+    "indexable": false,
+    "indexed": false,
+    "type": "bool",
+    "value": [
+        {
+            "year": 2013,
+            "value": false
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": false,
+            "max": true
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+// records_variables.json // lines
+
+"fthbc": {
+  "type": "float",
+  "desc": "Refundable first time homebuyers' credit for taxpayer",
+  "form": {"2013-20??": "calculated variable"},
+  "availability": "taxdata_puf, taxdata_cps"
+},
+"fthb_credit_amt": {
+  "type": "float",
+  "desc": "Imputed first time homebuyers' credit",
+  "form": {"2021-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+// records.py // lines 364-386
+
+# REFUNDABLE FIRST TIME HOMEBUYERS CREDIT
+if year >= 2021:
+    # TAXPAYERS' SHARE OF FIRST TIME HOMEBUYERS CREDIT
+    if self.e02000 <= 225000.:
+      self.fthbc_wt = ((self.e02000 * self.s006) /
+                             np.sum(self.e0200 * self.s006))
+      self.fthbc_wt[self.e02000 > 0] = (
+          (self.e02000[self.e02000 > 0] * self.s006[self.e02000 > 0])
+          / np.sum(self.e02000[self.e02000 > 0] *
+                   self.s006[self.e02000 > 0]))
+    else:
+      self.fthbc_wt = 0.
+    # ASSIGN FIRST TIME HOMEBUYERS' CREDIT TO TAXPAYERS
+    # NOTE: VALUES ARE CALCULATED FROM WEIGHTED CREDIT VALUES (e11580) FROM 2009 CPS MATCHED PUF
+    total_fthb_credit = {
+        2021: 44615366880, 2022: 46677307310,
+        2023: 48583293870, 2024: 50687519778,
+        2025: 52933464841, 2026: 55296218306,
+        2027: 57740193384, 2028: 60176841770,
+        2029: 62535408554, 2030: 64940238163}
+    self.fthb_credit_amt = ((
+        self.fthbc_wt * total_fthb_credit[year]) /
+                           (self.s006))
+
+// calcfunctions.py // lines 1401-1411 and 1765, 1771
+
+@iterate_jit(nopython=True)
+def FTHBTaxCredit(FTHB_credit, fthbc):
+    """
+    Computes refundable first time homebuyers' tax credit amount.
+    """
+    # not reflected in current law and records modified with imputation
+    if FTHB_credit is True:
+      fthbc = max(0., fthb_credit_amt)
+    else:
+      fthbc = 0.
+    return (fthbc)
+
+@iterate_jit(nopython=True)
+def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
+          c09200, payrolltax,
+          eitc, refund, iitax, combined, iradctc, fthbc):
+    """
+    Computes final taxes.
+    """
+    eitc = c59660
+    refund = (eitc + c11070 + c10960 +
+              personal_refundable_credit + ctc_new + rptc + iradctc + fthbc)
+    iitax = c09200 - refund
+    combined = iitax + payrolltax
+    return (eitc, refund, iitax, combined)
+
+// calculator.py // lines 21 and 1428
+
+from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
+                                   NetInvIncTax, AMT, EI_PayrollTax, Adj,
+                                   DependentCare, ALD_InvInc_ec_base, CapGains,
+                                   SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
+                                   StdDed, AdditionalMedicareTax, F2441, EITC,
+                                   RefundablePayrollTaxCredit,
+                                   ChildDepTaxCredit, AdditionalCTC, CTC_new,
+                                   PersonalTaxCredit, IRADCTaxCredit, FTHBTaxCredit, SchR,
+                                   AmOppCreditParts, EducationTaxCredit,
+                                   CharityCredit,
+                                   NonrefundableCredits, C1040, IITAX,
+                                   BenefitSurtax, BenefitLimitation,
+                                   FairShareTax, LumpSumTax, BenefitPrograms,
+                                   ExpandIncome, AfterTaxIncome)
+
+ # Calculate taxes with optimal itemized deduction
+ self._taxinc_to_amt()
+ F2441(self.__policy, self.__records)
+ EITC(self.__policy, self.__records)
+ RefundablePayrollTaxCredit(self.__policy, self.__records)
+ PersonalTaxCredit(self.__policy, self.__records)
+ IRADCTaxCredit(self.__policy, self.__records)
+ FTHBTaxCredit(self.__policy, self.__records)
+ AmOppCreditParts(self.__policy, self.__records)
+ SchR(self.__policy, self.__records)
+ EducationTaxCredit(self.__policy, self.__records)
+ CharityCredit(self.__policy, self.__records)
+ ChildDepTaxCredit(self.__policy, self.__records)
+ NonrefundableCredits(self.__policy, self.__records)
+ AdditionalCTC(self.__policy, self.__records)
+ C1040(self.__policy, self.__records)
+ CTC_new(self.__policy, self.__records)
+ IITAX(self.__policy, self.__records)

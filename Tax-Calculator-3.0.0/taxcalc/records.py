@@ -361,7 +361,30 @@ class Records(Data):
                 self.ltgains_wt * realization_at_death[year]) /
                                    (self.s006))
 
-        
+        # REFUNDABLE FIRST TIME HOMEBUYERS' CREDIT
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF FIRST TIME HOMEBUYERS CREDIT
+            if self.e02000 <= 225000.:
+              self.fthbc_wt = ((self.e02000 * self.s006) /
+                                     np.sum(self.e0200 * self.s006))
+              self.fthbc_wt[self.e02000 > 0] = (
+                  (self.e02000[self.e02000 > 0] * self.s006[self.e02000 > 0])
+                  / np.sum(self.e02000[self.e02000 > 0] *
+                           self.s006[self.e02000 > 0]))
+            else:
+              self.fthbc_wt = 0.
+            # ASSIGN FIRST TIME HOMEBUYERS' CREDIT TO TAXPAYERS
+            # NOTE: VALUES ARE CALCULATED FROM WEIGHTED CREDIT VALUES (e11580) FROM 2009 CPS MATCHED PUF
+            total_fthb_credit = {
+                2021: 44615366880, 2022: 46677307310,
+                2023: 48583293870, 2024: 50687519778,
+                2025: 52933464841, 2026: 55296218306,
+                2027: 57740193384, 2028: 60176841770,
+                2029: 62535408554, 2030: 64940238163}
+            self.fthb_credit_amt = ((
+                self.fthbc_wt * total_fthb_credit[year]) /
+                                   (self.s006))
+   
         # remove local dictionary
         del gfv
 
