@@ -1411,8 +1411,9 @@ def FTHBTaxCredit(FTHB_credit, fthbc, fthb_credit_amt):
     return (fthbc)
 
 @iterate_jit(nopython=True)
-def ICGTaxCredit(earned_p, earned_s, ICG_credit_c, ICG_credit_em,
-                  ICG_credit_rt, ICG_credit_thd, icgtc):
+def ICGTaxCredit(earned_p, earned_s, MARS, ICG_credit_c, ICG_credit_em,
+                  ICG_credit_rt, ICG_credit_thd, icg_expense, c05800, e07300,
+                  icgtc):
     """
     Computes nonrefundable informal care giver tax credit.
     """
@@ -1629,7 +1630,7 @@ def CharityCredit(e19800, e20100, c00100, CR_Charity_rt, CR_Charity_f,
 @iterate_jit(nopython=True)
 def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
                          e07600, p08000, odc,
-                         personal_nonrefundable_credit, icgtc
+                         personal_nonrefundable_credit, icgtc,
                          CR_RetirementSavings_hc, CR_ForeignTax_hc,
                          CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
                          CR_MinimumTax_hc, CR_OtherCredits_hc, charity_credit,

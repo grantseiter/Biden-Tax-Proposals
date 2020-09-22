@@ -384,22 +384,24 @@ class Records(Data):
             
         # NONREFUNDABLE INFORMAL CAREGIVER CREDIT
         if year >= 2021:
-        # TAXPAYERS' SHARE OF DEPENDENT CARE EXPENSES
-        self.icg_wt[self.elderly_dependents > 0] = (
-                  (self.e32800[self.elderly_dependents > 0] * self.s006[self.elderly_dependents > 0])
-                  / np.sum(self.e32800[self.elderly_dependents > 0] *
-                            self.s006[self.elderly_dependents > 0]))
-        # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
-        # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
-        total_icg_expense = {
-            2021: 15330530358, 2022: 16039044992,
-            2023: 16693971464, 2024: 17417016043,
-            2025: 18188757516, 2026: 19000636164,
-            2027: 19840423814, 2028: 20677693900,
-            2029: 21488133939, 2030: 22314470601}
-        self.icg_expense = ((
-            self.icg_wt * total_icg_expense[year]) /
-                               (self.s006))
+            # TAXPAYERS' SHARE OF DEPENDENT CARE EXPENSES
+            self.icg_wt = ((self.e32800 * self.s006) /
+                                     np.sum(self.e32800 * self.s006))
+            self.icg_wt[self.elderly_dependents > 0] = (
+                      (self.e32800[self.elderly_dependents > 0] * self.s006[self.elderly_dependents > 0])
+                      / np.sum(self.e32800[self.elderly_dependents > 0] *
+                                self.s006[self.elderly_dependents > 0]))
+            # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
+            # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
+            total_icg_expense = {
+                2021: 15330530358, 2022: 16039044992,
+                2023: 16693971464, 2024: 17417016043,
+                2025: 18188757516, 2026: 19000636164,
+                2027: 19840423814, 2028: 20677693900,
+                2029: 21488133939, 2030: 22314470601}
+            self.icg_expense = ((
+                self.icg_wt * total_icg_expense[year]) /
+                                   (self.s006))
     
         # remove local dictionary
         del gfv
