@@ -14896,6 +14896,110 @@
             "cps": true
         }
     },
+    "ICG_credit_c": {
+        "title": "Maximum nonrefundable informal caregiver credit",
+        "description": "The maximum amount of nonrefundable credit allowed.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": true,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+          "compatible_data": {
+              "puf": true,
+              "cps": true
+          }
+    },
+    "ICG_credit_em": {
+        "title": "Nonrefundable informal caregiver credit exemption",
+        "description": "Allows an eligible caregiver a tax credit of up to a percentage of expenses that exceed ICG_credit_em.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": true,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "CDCC_new_rt": {
+        "title": "Nonrefundable informal caregiver credit rate",
+        "description": "Allows an eligible caregiver a tax credit of up to this percentage of the cexpenses that exceed ICG_credit_em.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": false,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 1
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "ICG_credit_thd": {
+        "title": "Nonrefundable informal caregiver credit income threshold",
+        "description": "An eligible caregiver can only claim the tax credit if their earned income is above this level.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": true,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
     "LLC_Expense_c": {
         "title": "Lifetime learning credit expense limit",
         "description": "The maximum expense eligible for lifetime learning credit, per child.",

@@ -1411,6 +1411,32 @@ def FTHBTaxCredit(FTHB_credit, fthbc, fthb_credit_amt):
     return (fthbc)
 
 @iterate_jit(nopython=True)
+def ICGTaxCredit(earned_p, earned_s, ICG_credit_c, ICG_credit_em,
+                  ICG_credit_rt, ICG_credit_thd, icgtc):
+    """
+    Computes nonrefundable informal care giver tax credit.
+    """
+    # not reflected in current law and records modified with imputation
+    # earned income of taxpayer
+    icg32880 = earned_p  # earned income of taxpayer
+    if MARS == 2:
+        icg32890 = earned_s  # earned income of spouse when present
+    else:
+        icg32890 = earned_p
+    icg33000 = min(icg32880, icg32890)
+    if icg33000 > ICG_credit_thd:
+      # credit for actual expenses
+      icg_max_credit = (icg_expense - ICG_credit_em) * ICG_credit_rt
+      icg_credit = max(0., min(icg_max_credit, ICG_credit_c))
+      # credit is limited to minimum of individuals' earned income
+      icg_credit = max(0., min(icg_credit, icg33000))
+      # credit is limited by tax liability
+      icgtc = min(max(0., c05800 - e07300), icg_credit)
+    else:
+      icgtc = 0.
+    return icgtc
+
+@iterate_jit(nopython=True)
 def AmOppCreditParts(exact, e87521, num, c00100, CR_AmOppRefundable_hc,
                      CR_AmOppNonRefundable_hc, c10960, c87668):
     """
@@ -1603,7 +1629,7 @@ def CharityCredit(e19800, e20100, c00100, CR_Charity_rt, CR_Charity_f,
 @iterate_jit(nopython=True)
 def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
                          e07600, p08000, odc,
-                         personal_nonrefundable_credit,
+                         personal_nonrefundable_credit, icgtc
                          CR_RetirementSavings_hc, CR_ForeignTax_hc,
                          CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
                          CR_MinimumTax_hc, CR_OtherCredits_hc, charity_credit,
@@ -1656,14 +1682,18 @@ def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
     # Other credits
     c08000 = min(p08000 * (1. - CR_OtherCredits_hc), avail)
     avail = avail - c08000
+    # Charity credit
     charity_credit = min(charity_credit, avail)
     avail = avail - charity_credit
     # Personal nonrefundable credit
     personal_nonrefundable_credit = min(personal_nonrefundable_credit, avail)
     avail = avail - personal_nonrefundable_credit
+    # ICG credit
+    icgtc = min(icgtc, avail)
+    avail = avail - icgtc
     return (c07180, c07200, c07220, c07230, c07240, odc,
             c07260, c07300, c07400, c07600, c08000, charity_credit,
-            personal_nonrefundable_credit)
+            personal_nonrefundable_credit, icgtc)
 
 
 @iterate_jit(nopython=True)
@@ -1709,7 +1739,7 @@ def AdditionalCTC(codtc_limited, ACTC_c, n24, earned, ACTC_Income_thd,
 def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
           c07400, c07600, c08000, e09700, e09800, e09900, niit, othertaxes,
           c07100, c09200, odc, charity_credit,
-          personal_nonrefundable_credit):
+          personal_nonrefundable_credit, icgtc):
     """
     Computes total used nonrefundable credits, c07100, othertaxes, and
     income tax before refundable credits, c09200.
@@ -1717,7 +1747,7 @@ def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
     # total used nonrefundable credits (as computed in NonrefundableCredits)
     c07100 = (c07180 + c07200 + c07600 + c07300 + c07400 + c07220 + c08000 +
               c07230 + c07240 + c07260 + odc + charity_credit +
-              personal_nonrefundable_credit)
+              personal_nonrefundable_credit + icgtc)
     # tax after credits (2016 Form 1040, line 56)
     tax_net_nonrefundable_credits = max(0., c05800 - c07100)
     # tax (including othertaxes) before refundable credits

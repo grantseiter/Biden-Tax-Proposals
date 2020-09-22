@@ -1,0 +1,311 @@
+// ===========================================================#
+// Title: "ICG_credit"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Credit for informal caregivers"
+          "Policy Parameters: ICG_credit_c, ICG_credit_em, ICG_credit_rt, ICG_credit_thd"
+          "Input Variables: icgtc, icg_expense"
+// Desc:  Allows an eligible caregiver a tax credit of up to $5,000 for 30% of the cost of long-term
+          care expenses that exceed $2,000 in a taxable year. The bill defines "eligible caregiver"
+          as an individual who has earned income for the taxable year in excess of $7,500 and pays
+          or incurs expenses for providing care to a spouse or other dependent relative with long-term
+          care needs. (Source: Biden Proposals and S.1443 — 116th Congress)
+// ===========================================================#
+
+// policy_current_law.json // lines 14899-15002
+
+"ICG_credit_c": {
+    "title": "Maximum nonrefundable informal caregiver credit",
+    "description": "The maximum amount of nonrefundable credit allowed.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Nonrefundable Credits",
+    "section_2": "Informal Caregiver Credit",
+    "indexable": true,
+    "indexed": false,
+    "type": "float",
+    "value": [
+        {
+            "year": 2013,
+            "value": 0.0
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": 0,
+            "max": 9e+99
+        }
+    },
+      "compatible_data": {
+          "puf": true,
+          "cps": true
+      }
+    },
+    "ICG_credit_em": {
+        "title": "Nonrefundable informal caregiver credit exemption",
+        "description": "Allows an eligible caregiver a tax credit of up to a percentage of expenses that exceed ICG_credit_em.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": true,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "CDCC_new_rt": {
+        "title": "Nonrefundable informal caregiver credit rate",
+        "description": "Allows an eligible caregiver a tax credit of up to this percentage of the cexpenses that exceed ICG_credit_em.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": false,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 1
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "ICG_credit_thd": {
+        "title": "Nonrefundable informal caregiver credit income threshold",
+        "description": "An eligible caregiver can only claim the tax credit if their earned income is above this level.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Informal Caregiver Credit",
+        "indexable": true,
+        "indexed": false,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+// records_variables.json // lines 9999999999999999999999999999999
+
+"icgtc": {
+  "type": "float",
+  "desc": "Nonrefundable informal caregiver tax credit",
+  "form": {"2013-20??": "calculated variable"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+"icg_expense": {
+  "type": "float",
+  "desc": "Imputed informal caregiver expense",
+  "form": {"2021-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+// records.py // lines 385-402
+
+# NONREFUNDABLE INFORMAL CAREGIVER CREDIT
+if year >= 2021:
+    # TAXPAYERS' SHARE OF DEPENDENT CARE EXPENSES
+    self.icg_wt[self.elderly_dependents > 0] = (
+              (self.e32800[self.elderly_dependents > 0] * self.s006[self.elderly_dependents > 0])
+              / np.sum(self.e32800[self.elderly_dependents > 0] *
+                        self.s006[self.elderly_dependents > 0]))
+    # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
+    # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
+    total_icg_expense = {
+        2021: 15330530358, 2022: 16039044992,
+        2023: 16693971464, 2024: 17417016043,
+        2025: 18188757516, 2026: 19000636164,
+        2027: 19840423814, 2028: 20677693900,
+        2029: 21488133939, 2030: 22314470601}
+    self.icg_expense = ((
+        self.icg_wt * total_icg_expense[year]) /
+                           (self.s006))
+
+// calcfunctions.py // lines 1413-1437 and 1691-1696 and 1742, 1750
+
+@iterate_jit(nopython=True)
+def ICGTaxCredit(earned_p, earned_s, ICG_credit_c, ICG_credit_em,
+                  ICG_credit_rt, ICG_credit_thd, icgtc):
+    """
+    Computes nonrefundable informal care giver tax credit.
+    """
+    # not reflected in current law and records modified with imputation
+    # earned income of taxpayer
+    icg32880 = earned_p  # earned income of taxpayer
+    if MARS == 2:
+        icg32890 = earned_s  # earned income of spouse when present
+    else:
+        icg32890 = earned_p
+    icg33000 = min(icg32880, icg32890)
+    if icg33000 > ICG_credit_thd:
+      # credit for actual expenses
+      icg_max_credit = (icg_expense - ICG_credit_em) * ICG_credit_rt
+      icg_credit = max(0., min(icg_max_credit, ICG_credit_c))
+      # credit is limited to minimum of individuals' earned income
+      icg_credit = max(0., min(icg_credit, icg33000))
+      # credit is limited by tax liability
+      icgtc = min(max(0., c05800 - e07300), icg_credit)
+    else:
+      icgtc = 0.
+    return icgtc
+
+    @iterate_jit(nopython=True)
+    def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
+                             e07600, p08000, odc,
+                             personal_nonrefundable_credit, icgtc
+                             CR_RetirementSavings_hc, CR_ForeignTax_hc,
+                             CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
+                             CR_MinimumTax_hc, CR_OtherCredits_hc, charity_credit,
+                             c07180, c07200, c07220, c07230, c07240,
+                             c07260, c07300, c07400, c07600, c08000):
+        """
+        NonRefundableCredits function sequentially limits credits to tax liability.
+
+        Parameters
+        ----------
+        CR_RetirementSavings_hc: Retirement savings credit haircut
+        CR_ForeignTax_hc: Foreign tax credit haircut
+        CR_ResidentialEnergy_hc: Residential energy credit haircut
+        CR_GeneralBusiness_hc: General business credit haircut
+        CR_MinimumTax_hc: Minimum tax credit haircut
+        CR_OtherCredits_hc: Other credits haircut
+        """
+        # limit tax credits to tax liability in order they are on 2015 1040 form
+        avail = c05800
+        # Foreign tax credit - Form 1116
+        c07300 = min(e07300 * (1. - CR_ForeignTax_hc), avail)
+        avail = avail - c07300
+        # Child & dependent care expense credit
+        c07180 = min(c07180, avail)
+        avail = avail - c07180
+        # Education tax credit
+        c07230 = min(c07230, avail)
+        avail = avail - c07230
+        # Retirement savings credit - Form 8880
+        c07240 = min(e07240 * (1. - CR_RetirementSavings_hc), avail)
+        avail = avail - c07240
+        # Child tax credit
+        c07220 = min(c07220, avail)
+        avail = avail - c07220
+        # Other dependent credit
+        odc = min(odc, avail)
+        avail = avail - odc
+        # Residential energy credit - Form 5695
+        c07260 = min(e07260 * (1. - CR_ResidentialEnergy_hc), avail)
+        avail = avail - c07260
+        # General business credit - Form 3800
+        c07400 = min(e07400 * (1. - CR_GeneralBusiness_hc), avail)
+        avail = avail - c07400
+        # Prior year minimum tax credit - Form 8801
+        c07600 = min(e07600 * (1. - CR_MinimumTax_hc), avail)
+        avail = avail - c07600
+        # Schedule R credit
+        c07200 = min(c07200, avail)
+        avail = avail - c07200
+        # Other credits
+        c08000 = min(p08000 * (1. - CR_OtherCredits_hc), avail)
+        avail = avail - c08000
+        # Charity Credit
+        charity_credit = min(charity_credit, avail)
+        avail = avail - charity_credit
+        # Personal nonrefundable credit
+        personal_nonrefundable_credit = min(personal_nonrefundable_credit, avail)
+        avail = avail - personal_nonrefundable_credit
+        # ICG credit
+        icgtc = min(icgtc, avail)
+        avail = avail - icgtc
+        return (c07180, c07200, c07220, c07230, c07240, odc,
+                c07260, c07300, c07400, c07600, c08000, charity_credit,
+                personal_nonrefundable_credit, icgtc)
+
+@iterate_jit(nopython=True)
+def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
+          c07400, c07600, c08000, e09700, e09800, e09900, niit, othertaxes,
+          c07100, c09200, odc, charity_credit,
+          personal_nonrefundable_credit, icgtc):
+    """
+    Computes total used nonrefundable credits, c07100, othertaxes, and
+    income tax before refundable credits, c09200.
+    """
+    # total used nonrefundable credits (as computed in NonrefundableCredits)
+    c07100 = (c07180 + c07200 + c07600 + c07300 + c07400 + c07220 + c08000 +
+              c07230 + c07240 + c07260 + odc + charity_credit +
+              personal_nonrefundable_credit + icgtc)
+    # tax after credits (2016 Form 1040, line 56)
+    tax_net_nonrefundable_credits = max(0., c05800 - c07100)
+    # tax (including othertaxes) before refundable credits
+    othertaxes = e09700 + e09800 + e09900 + niit
+    c09200 = othertaxes + tax_net_nonrefundable_credits
+    return (c07100, othertaxes, c09200)
+
+// calculator.py // lines 23 and 1429
+
+from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
+                                   NetInvIncTax, AMT, EI_PayrollTax, Adj,
+                                   DependentCare, ALD_InvInc_ec_base, CapGains,
+                                   SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
+                                   StdDed, AdditionalMedicareTax, F2441, EITC,
+                                   RefundablePayrollTaxCredit,
+                                   ChildDepTaxCredit, AdditionalCTC, CTC_new, CDCC_new,
+                                   PersonalTaxCredit, IRADCTaxCredit, FTHBTaxCredit, SchR,
+                                   AmOppCreditParts, EducationTaxCredit,
+                                   CharityCredit, ICGTaxCredit,
+                                   NonrefundableCredits, C1040, IITAX,
+                                   BenefitSurtax, BenefitLimitation,
+                                   FairShareTax, LumpSumTax, BenefitPrograms,
+                                   ExpandIncome, AfterTaxIncome)
+
+ # Calculate taxes with optimal itemized deduction
+ self._taxinc_to_amt()
+ F2441(self.__policy, self.__records)
+ EITC(self.__policy, self.__records)
+ RefundablePayrollTaxCredit(self.__policy, self.__records)
+ PersonalTaxCredit(self.__policy, self.__records)
+ IRADCTaxCredit(self.__policy, self.__records)
+ FTHBTaxCredit(self.__policy, self.__records)
+ ICGTaxCredit(self.__policy, self.__records)
+ AmOppCreditParts(self.__policy, self.__records)
+ SchR(self.__policy, self.__records)
+ EducationTaxCredit(self.__policy, self.__records)
+ CharityCredit(self.__policy, self.__records)
+ ChildDepTaxCredit(self.__policy, self.__records)
+ NonrefundableCredits(self.__policy, self.__records)
+ AdditionalCTC(self.__policy, self.__records)
+ C1040(self.__policy, self.__records)
+ CTC_new(self.__policy, self.__records)
+ CDCC_new(self.__policy, self.__records)
+ IITAX(self.__policy, self.__records)
