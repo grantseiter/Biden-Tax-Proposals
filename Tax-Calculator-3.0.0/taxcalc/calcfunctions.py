@@ -1399,7 +1399,7 @@ def IRADCTaxCredit(e03150, e03300, IRADC_credit_c, IRADC_credit_rt, iradctc):
     return (iradctc)
 
 @iterate_jit(nopython=True)
-def FTHBTaxCredit(FTHB_credit, fthbc):
+def FTHBTaxCredit(FTHB_credit, fthbc, fthb_credit_amt):
     """
     Computes refundable first time homebuyers' tax credit amount.
     """

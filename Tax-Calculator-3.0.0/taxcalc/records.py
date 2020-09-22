@@ -364,15 +364,12 @@ class Records(Data):
         # REFUNDABLE FIRST TIME HOMEBUYERS' CREDIT
         if year >= 2021:
             # TAXPAYERS' SHARE OF FIRST TIME HOMEBUYERS CREDIT
-            if self.e02000 <= 225000.:
-              self.fthbc_wt = ((self.e02000 * self.s006) /
-                                     np.sum(self.e0200 * self.s006))
-              self.fthbc_wt[self.e02000 > 0] = (
-                  (self.e02000[self.e02000 > 0] * self.s006[self.e02000 > 0])
-                  / np.sum(self.e02000[self.e02000 > 0] *
-                           self.s006[self.e02000 > 0]))
-            else:
-              self.fthbc_wt = 0.
+            self.fthb_wt = ((self.e00200 * self.s006) /
+                                   np.sum(self.e00200 * self.s006))
+            self.fthb_wt[self.e00200 > 0] = (
+                (self.e00200[self.e00200 > 0] * self.s006[self.e00200 > 0])
+                / np.sum(self.e00200[self.e00200 > 0] *
+                         self.s006[self.e00200 > 0]))
             # ASSIGN FIRST TIME HOMEBUYERS' CREDIT TO TAXPAYERS
             # NOTE: VALUES ARE CALCULATED FROM WEIGHTED CREDIT VALUES (e11580) FROM 2009 CPS MATCHED PUF
             total_fthb_credit = {
@@ -382,7 +379,7 @@ class Records(Data):
                 2027: 57740193384, 2028: 60176841770,
                 2029: 62535408554, 2030: 64940238163}
             self.fthb_credit_amt = ((
-                self.fthbc_wt * total_fthb_credit[year]) /
+                self.fthb_wt * total_fthb_credit[year]) /
                                    (self.s006))
    
         # remove local dictionary
