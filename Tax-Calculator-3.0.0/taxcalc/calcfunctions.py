@@ -800,7 +800,7 @@ def TaxInc(c00100, standard, c04470, c04600, MARS, e00900, e26270,
            PT_qbid_rt, PT_qbid_taxinc_thd, PT_qbid_taxinc_gap,
            PT_qbid_w2_wages_rt,
            PT_qbid_alt_w2_wages_rt, PT_qbid_alt_property_rt,
-           c04800, qbided):
+           c04800, qbided, StudentLoan_em, sldf):
     """
     Calculates taxable income, c04800, and
     qualified business income deduction, qbided.
@@ -855,9 +855,16 @@ def TaxInc(c00100, standard, c04470, c04600, MARS, e00900, e26270,
     net_cg = e00650 + c01000  # per line 34 in 2018 Pub 535 Worksheet 12-A
     taxinc_cap = PT_qbid_rt * max(0., pre_qbid_taxinc - net_cg)
     qbided = min(qbided, taxinc_cap)
+    # exclude forgiven student loan debt from taxable income
+    if StudentLoan_em is True:
+      base_sldf = max(0., studloan_debt)
+    else:
+      base_sldf = 0.
+    # exclusion is limited to tax inc
+    sldf = max(0., min(pre_qbid_taxinc - qbided, base_sldf))
     # calculate taxable income after qualified business income deduction
-    c04800 = max(0., pre_qbid_taxinc - qbided)
-    return (c04800, qbided)
+    c04800 = max(0., pre_qbid_taxinc - qbided - sldf)
+    return (c04800, qbided, sldf)
 
 
 @JIT(nopython=True)

@@ -402,6 +402,27 @@ class Records(Data):
             self.icg_expense = ((
                 self.icg_wt * total_icg_expense[year]) /
                                    (self.s006))
+
+        # STUDENT LOAN DEBT FORGIVENESS
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF FORGIVEN STUDENT LOANS
+            self.studloan_wt = ((self.e03210 * self.s006) /
+                                             np.sum(self.e03210 * self.s006))
+            self.studloan_wt[e03210 > 0] = (
+                      (self.e03210[self.e03210 > 0] * self.s006[self.e03210 > 0])
+                      / np.sum(self.e03210[self.e03210 > 0] *
+                                self.s006[self.e03210 > 0]))
+            # ASSIGN FORGIVEN STUDENT LOANS TO TAXPAYERS
+            # NOTE: VALUES ARE CALCULATED FROM PUBLIC SERVICE LOAN FORGIVENESS DATA, FSAID US DOE.
+            total_studloan_debt = {
+                2021: 153198852, 2022: 160279079,
+                2023: 166823796, 2024: 174049221,
+                2025: 181761277, 2026: 189874426,
+                2027: 198266471, 2028: 206633358,
+                2029: 214732131, 2030: 222989760}
+            self.studloan_debt = ((
+                self.studloan_wt * total_studloan_debt[year]) /
+                                   (self.s006))
     
         # remove local dictionary
         del gfv

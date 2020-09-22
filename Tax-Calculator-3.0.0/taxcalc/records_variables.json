@@ -695,6 +695,18 @@
       "desc": "Imputed informal caregiver expense",
       "form": {"2021-20??": "imputed estimates in records.py"},
       "availability": "taxdata_puf, taxdata_cps"
+    },
+    "sldf": {
+      "type": "float",
+      "desc": "Student loan debt excluded from taxable income",
+      "form": {"2013-20??": "calculated variable"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
+    "studloan_debt": {
+      "type": "float",
+      "desc": "Imputed forgiven student loan debt",
+      "form": {"2021-20??": "imputed estimates in records.py"},
+      "availability": "taxdata_puf, taxdata_cps"
     }
   },
   "calc": {

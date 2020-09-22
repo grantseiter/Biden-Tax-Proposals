@@ -15000,6 +15000,32 @@
             "cps": true
         }
     },
+    "StudentLoan_em": {
+        "title": "Forgiven student loan debt will be excluded from taxable income",
+        "description": "Specifies whether or not forgiven student loan debt will be excluded from taxable income.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Personal Exemptions",
+        "section_2": "Student Loan Forgiveness",
+        "indexable": false,
+        "indexed": false,
+        "type": "bool",
+        "value": [
+            {
+                "year": 2013,
+                "value": false
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": false,
+                "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
     "LLC_Expense_c": {
         "title": "Lifetime learning credit expense limit",
         "description": "The maximum expense eligible for lifetime learning credit, per child.",
