@@ -1783,7 +1783,7 @@ def CDCC_new(CDCC_new_c, CDCC_new_rt, CDCC_new_ps, CDCC_new_pe, CDCC_new_prt, cd
     if positiveagi < cdcc_min:
         cdcc_new = cdcc_new
     elif positiveagi < cdcc_max:
-        cdcc_new_reduced = max(0., cdcc_new - CDCC_new_prt * (positiveagi - ymin))
+        cdcc_new_reduced = max(0., cdcc_new - CDCC_new_prt * (positiveagi - cdcc_min))
         cdcc_new = min(cdcc_new, cdcc_new_reduced)
     else:
         cdcc_new = 0.
