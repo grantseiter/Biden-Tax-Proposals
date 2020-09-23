@@ -1,0 +1,483 @@
+// ===========================================================#
+// Title: "qbided-cfn"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Calculate qualified business income deduction"
+          "Policy Parameters: PT_qbid_taxinc_thd, PT_qbid_taxinc_gap"
+// ===========================================================#
+
+// policy_current_law.json // lines 11828-12271
+
+"PT_qbid_taxinc_thd": {
+    "title": "Lower threshold of pre-QBID taxable income",
+    "description": "Pre-QBID taxable income above this lower threshold implies the QBID amount begins to be limited.",
+    "notes": "",
+    "section_1": "Personal Income",
+    "section_2": "Pass-Through",
+    "indexable": true,
+    "indexed": true,
+    "type": "float",
+    "value": [
+        {
+            "year": 2013,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2013,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2013,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2013,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2013,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2014,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2014,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2014,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2014,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2014,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2015,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2015,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2015,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2015,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2015,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2016,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2016,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2016,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2016,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2016,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2017,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2017,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2017,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2017,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2017,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2018,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2018,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2018,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2018,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2018,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2019,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2019,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2019,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2019,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2019,
+            "MARS": "widow",
+            "value": 0.0
+        },
+        {
+            "year": 2026,
+            "MARS": "single",
+            "value": 0.0
+        },
+        {
+            "year": 2026,
+            "MARS": "mjoint",
+            "value": 0.0
+        },
+        {
+            "year": 2026,
+            "MARS": "mseparate",
+            "value": 0.0
+        },
+        {
+            "year": 2026,
+            "MARS": "headhh",
+            "value": 0.0
+        },
+        {
+            "year": 2026,
+            "MARS": "widow",
+            "value": 0.0
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": 0,
+            "max": 9e+99
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+"PT_qbid_taxinc_gap": {
+    "title": "Dollar gap between upper and lower threshold of pre-QBID taxable income",
+    "description": "Pre-QBID taxable income above this upper threshold implies the QBID amount is even more limited.",
+    "notes": "",
+    "section_1": "Personal Income",
+    "section_2": "Pass-Through",
+    "indexable": true,
+    "indexed": false,
+    "type": "float",
+    "value": [
+        {
+            "year": 2013,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2013,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2013,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2013,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2013,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2014,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2014,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2014,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2014,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2014,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2015,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2015,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2015,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2015,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2015,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2016,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2016,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2016,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2016,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2016,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2017,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2017,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2017,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2017,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2017,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2018,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2018,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2018,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2018,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2018,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2019,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2019,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2019,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2019,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2019,
+            "MARS": "widow",
+            "value": 1.0
+        },
+        {
+            "year": 2026,
+            "MARS": "single",
+            "value": 1.0
+        },
+        {
+            "year": 2026,
+            "MARS": "mjoint",
+            "value": 1.0
+        },
+        {
+            "year": 2026,
+            "MARS": "mseparate",
+            "value": 1.0
+        },
+        {
+            "year": 2026,
+            "MARS": "headhh",
+            "value": 1.0
+        },
+        {
+            "year": 2026,
+            "MARS": "widow",
+            "value": 1.0
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": 1,
+            "max": 9e+99
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+// calcfunctions.py // lines 796-820
+
+@iterate_jit(nopython=True)
+def TaxInc(c00100, standard, c04470, c04600, MARS, e00900, e26270,
+           e02100, e27200, e00650, c01000,
+           PT_SSTB_income, PT_binc_w2_wages, PT_ubia_property,
+           PT_qbid_rt, PT_qbid_taxinc_thd, PT_qbid_taxinc_gap,
+           PT_qbid_w2_wages_rt,
+           PT_qbid_alt_w2_wages_rt, PT_qbid_alt_property_rt,
+           c04800, qbided):
+    """
+    Calculates taxable income, c04800, and
+    qualified business income deduction, qbided.
+
+    """
+    # calculate taxable income before qualified business income deduction
+    pre_qbid_taxinc = max(0., c00100 - max(c04470, standard) - c04600)
+    # calculate qualified business income deduction
+    qbided = 0.
+    qbinc = max(0., e00900 + e26270 + e02100 + e27200)
+    qbided_full = qbinc * PT_qbid_rt
+    if PT_qbid_taxinc_thd[MARS-1] > 0:
+        if pre_qbid_taxinc < PT_qbid_taxinc_thd[MARS-1]:
+            qbided = qbided_full
+        else:
+            qbided = max(0., qbided_full * (1 - (pre_qbid_taxinc - PT_qbid_taxinc_thd[MARS-1])/ PT_qbid_taxinc_gap[MARS-1]))
+    else:
+        qbided = qbided_full

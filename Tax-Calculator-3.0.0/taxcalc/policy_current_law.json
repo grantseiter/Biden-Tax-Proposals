@@ -11963,52 +11963,52 @@
             {
                 "year": 2018,
                 "MARS": "single",
-                "value": 157500.0
+                "value": 0.0
             },
             {
                 "year": 2018,
                 "MARS": "mjoint",
-                "value": 315000.0
+                "value": 0.0
             },
             {
                 "year": 2018,
                 "MARS": "mseparate",
-                "value": 157500.0
+                "value": 0.0
             },
             {
                 "year": 2018,
                 "MARS": "headhh",
-                "value": 157500.0
+                "value": 0.0
             },
             {
                 "year": 2018,
                 "MARS": "widow",
-                "value": 315000.0
+                "value": 0.0
             },
             {
                 "year": 2019,
                 "MARS": "single",
-                "value": 160700.0
+                "value": 0.0
             },
             {
                 "year": 2019,
                 "MARS": "mjoint",
-                "value": 321400.0
+                "value": 0.0
             },
             {
                 "year": 2019,
                 "MARS": "mseparate",
-                "value": 160725.0
+                "value": 0.0
             },
             {
                 "year": 2019,
                 "MARS": "headhh",
-                "value": 160700.0
+                "value": 0.0
             },
             {
                 "year": 2019,
                 "MARS": "widow",
-                "value": 321400.0
+                "value": 0.0
             },
             {
                 "year": 2026,
@@ -12185,52 +12185,52 @@
             {
                 "year": 2018,
                 "MARS": "single",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2018,
                 "MARS": "mjoint",
-                "value": 100000.0
+                "value": 1.0
             },
             {
                 "year": 2018,
                 "MARS": "mseparate",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2018,
                 "MARS": "headhh",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2018,
                 "MARS": "widow",
-                "value": 100000.0
+                "value": 1.0
             },
             {
                 "year": 2019,
                 "MARS": "single",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2019,
                 "MARS": "mjoint",
-                "value": 100000.0
+                "value": 1.0
             },
             {
                 "year": 2019,
                 "MARS": "mseparate",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2019,
                 "MARS": "headhh",
-                "value": 50000.0
+                "value": 1.0
             },
             {
                 "year": 2019,
                 "MARS": "widow",
-                "value": 100000.0
+                "value": 1.0
             },
             {
                 "year": 2026,
