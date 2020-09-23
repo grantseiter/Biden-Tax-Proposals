@@ -3,8 +3,8 @@
 // File_Author: "Grant M. Seiter -- American Enterprise Institute"
 // Date: "September 2020"
 // Notes: "Student loan forgiveness exemption"
-          "Policy Parameters: 9999999999999999999999"
-          "Input Variables: 99999999999999999"
+          "Policy Parameters: StudentLoan_em"
+          "Input Variables: sldf, studloan_debt"
 // Desc:  Biden excludes debt forgiven through the income-based repayment
           plan from taxable income.(Source: Biden Proposals )
 // ===========================================================#

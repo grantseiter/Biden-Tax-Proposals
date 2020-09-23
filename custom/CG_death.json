@@ -1,0 +1,173 @@
+// ===========================================================#
+// Title: "CG_death"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Tax unrealized capital gains at death"
+          "Policy Parameters: CG_death, CG_death_ec"
+          "Input Variables: taxable_gains_at_death, gains_at_death"
+          "CALCFUNCS LINES 305-347"
+// ===========================================================#
+
+// policy_current_law.json
+
+"CG_death": {
+    "title": "Long term capital gains and qualified dividends will be taxed at death",
+    "description": "Specifies whether or not unrealized long term capital gains and qualified dividends are taxed at death.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Capital Gains And Dividends",
+    "section_2": "Tax Unrealized Capital Gains at Death",
+    "indexable": false,
+    "indexed": false,
+    "type": "bool",
+    "value": [
+        {
+            "year": 2013,
+            "value": false
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": false,
+            "max": true
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+"CG_death_ec": {
+    "title": "The capital gains tax at death exclusion threshold",
+    "description": "The capital gains tax at death, CG_death, applies to all values in excess of this excluded amount.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Capital Gains And Dividends",
+    "section_2": "Tax Unrealized Capital Gains at Death",
+    "indexable": false,
+    "indexed": false,
+    "type": "float",
+    "value": [
+        {
+            "year": 2013,
+            "MARS": "single",
+            "value": 9e99
+        },
+        {
+            "year": 2013,
+            "MARS": "mjoint",
+            "value": 9e99
+        },
+        {
+            "year": 2013,
+            "MARS": "mseparate",
+            "value": 9e99
+        },
+        {
+            "year": 2013,
+            "MARS": "headhh",
+            "value": 9e99
+        },
+        {
+            "year": 2013,
+            "MARS": "widow",
+            "value": 9e99
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": 0,
+            "max": 9e+99
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+// records_variables.json // lines 651-662
+
+"taxable_gains_at_death": {
+  "type": "float",
+  "desc": "Imputed taxable portion of capital gains at death",
+  "form": {"2021-20??": "imputed from JCT estimates in records.py"},
+  "availability": "taxdata_puf"
+},
+"gains_at_death": {
+  "type": "float",
+  "desc": "Imputed capital gains at death",
+  "form": {"2021-20??": "imputed from JCT estimates in records.py"},
+  "availability": "taxdata_puf"
+}
+
+// records.py // lines 343-360
+
+# CAPITAL GAINS AT DEATH
+if year >= 2021:
+    # TAXPAYERS' SHARE OF CAPITAL GAINS
+    self.ltgains_wt = ((self.p23250 * self.s006) / ## CHECK THIS LINE FOR DEBUGGING
+                           np.sum(self.p23250 * self.s006))
+    self.ltgains_wt[self.p23250 > 0] = (
+        (self.p23250[self.p23250 > 0] * self.s006[self.p23250 > 0])
+        / np.sum(self.p23250[self.p23250 > 0] *
+                 self.s006[self.p23250 > 0]))
+    # ASSIGN TOTAL REALIZATION AT DEATH TO TAXPAYERS
+    # NOTE: VALUES ARE JCT CAP GAINS TAX EXPENDITURES FOR EXCLUSION AT DEATH/EMT
+    realization_at_death = {
+        2021: 204253570343, 2022: 215627184994,
+        2023: 226688939254, 2024: 235220544654,
+        2025: 243736672365, 2026: 245533163473,
+        2027: 254865207631, 2028: 264380671657,
+        2029: 274178230759, 2030: 284077457991}
+    self.gains_at_death = ((
+        self.ltgains_wt * realization_at_death[year]) /
+                           (self.s006))
+
+// calcfunctions.py // lines 305-347
+
+@iterate_jit(nopython=True)
+def CapGains(p23250, p22250, sep, ALD_StudentLoan_hc,
+            ALD_InvInc_ec_rt, invinc_ec_base,
+            e00200, e00300, e00600, e00650, e00700, e00800,
+            CG_nodiff, CG_ec, CG_reinvest_ec_rt,
+            ALD_BusinessLosses_c, MARS,
+            e00900, e01100, e01200, e01400, e01700, e02000, e02100,
+            e02300, e00400, e02400, c02900, e03210, e03230, e03240,
+            c01000, c23650, ymod, ymod1, invinc_agi_ec, gains_at_death,
+            CG_death, CG_death_ec):
+   """
+   CapGains function: ...
+   """
+   # compute taxable portion of capital gains at death (gains_at_death - CG_death_ec)
+   # not reflected in current law and records modified with tax at death imputation
+   if CG_death is True:
+     taxable_gains_at_death = max(0., gains_at_death - CG_death_ec[MARS-1])
+   else:
+     taxable_gains_at_death = 0.
+   # net capital gain (long term + short term + gains at death) before exclusion
+   c23650 = p23250 + p22250 + taxable_gains_at_death
+   # limitation on capital losses
+   c01000 = max((-3000. / sep), c23650)
+   # compute total investment income
+   invinc = e00300 + e00600 + c01000 + e01100 + e01200
+   # compute exclusion of investment income from AGI
+   invinc_agi_ec = ALD_InvInc_ec_rt * max(0., invinc_ec_base)
+   # compute ymod1 variable that is included in AGI
+   ymod1 = (e00200 + e00700 + e00800 + e01400 + e01700 +
+            invinc - invinc_agi_ec + e02100 + e02300 +
+            max(e00900 + e02000, -ALD_BusinessLosses_c[MARS - 1]))
+   if CG_nodiff:
+       # apply QDIV+CG exclusion if QDIV+LTCG receive no special tax treatment
+       qdcg_pos = max(0., e00650 + c01000)
+       qdcg_exclusion = (min(CG_ec, qdcg_pos) +
+                         CG_reinvest_ec_rt * max(0., qdcg_pos - CG_ec))
+       ymod1 = max(0., ymod1 - qdcg_exclusion)
+       invinc_agi_ec += qdcg_exclusion
+   # compute ymod variable that is used in OASDI benefit taxation logic
+   ymod2 = e00400 + (0.50 * e02400) - c02900
+   ymod3 = (1. - ALD_StudentLoan_hc) * e03210 + e03230 + e03240
+   ymod = ymod1 + ymod2 + ymod3
+   return (c01000, c23650, ymod, ymod1, invinc_agi_ec, gains_at_death,
+     taxable_gains_at_death)
+
+// calculator.py // NONE

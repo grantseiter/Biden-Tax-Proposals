@@ -1,13 +1,78 @@
 // ===========================================================#
-// Title: "IRADC_credit-cfn"
+// Title: "IRADC_credit"
 // File_Author: "Grant M. Seiter -- American Enterprise Institute"
 // Date: "September 2020"
 // Notes: "Refundable retirement savings credit"
-          "calcfunc lines 1378-1391 and  1743-1755"
-          "calculator line 21"
+          "Policy Parameters: IRADC_credit_c, IRADC_credit_rt"
+          "Input Variables: rrstc"
 // ===========================================================#
 
-// calcfunctions.py
+// policy_current_law.json
+
+"IRADC_credit_c": {
+      "title": "Maximum refundable retirement savings credit",
+      "description": "This is the maximum amount of the refundable retirement savings tax credit ",
+      "notes": "This parameter is not reflected in current law.",
+      "section_1": "Refundable Credits",
+      "section_2": "Refundable Retirement Saving Credit",
+      "indexable": true,
+      "indexed": true,
+      "type": "float",
+      "value": [
+          {
+              "year": 2013,
+              "value": 9e+99
+          }
+      ],
+      "validators": {
+          "range": {
+              "min": 0,
+              "max": 9e+99
+          }
+      },
+      "compatible_data": {
+          "puf": true,
+          "cps": true
+      }
+  },
+
+"IRADC_credit_rt": {
+    "title": "Refundable retirement savings credit rate",
+    "description": "Percent of contributions to traditional IRAs and DC pensions given as a refundable credit",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Refundable Credits",
+    "section_2": "Refundable Retirement Saving Credit",
+    "indexable": false,
+    "indexed": false,
+    "type": "float",
+    "value": [
+        {
+            "year": 2013,
+            "value": 0.0
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": 0,
+            "max": 1
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+// records_variables.json // lines 663-668
+
+"iradctc": {
+  "type": "float",
+  "desc": "Refundable Retirement Savings Tax Credit for taxpayer",
+  "form": {"2013-20??": "calculated variable"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+// calcfunctions.py // lines 1378-1391 and  1743-1755
 
 @iterate_jit(nopython=True)
 def IRADCTaxCredit(e03150, e03300, IRADC_credit_c, IRADC_credit_rt, iradctc):
@@ -37,7 +102,7 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
     combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)
 
-// calculator.py
+// calculator.py // line 21
 
 from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
                                    NetInvIncTax, AMT, EI_PayrollTax, Adj,
