@@ -10,7 +10,7 @@ import numpy as np
 import taxcalc as tc
 
 
-def response(calc_1, calc_2, elasticities, dump=False):
+def response(calc_1, calc_2, elasticities, dump=False, chg_inc=True):
     """
     Implements TaxBrain "Partial Equilibrium Simulation" dynamic analysis
     returning results as a tuple of Pandas DataFrame objects (df1, df2) where:
@@ -18,6 +18,12 @@ def response(calc_1, calc_2, elasticities, dump=False):
     df2 is extracted from a reform-policy calc_2 copy that incorporates the
         behavioral responses given by the nature of the baseline-to-reform
         change in policy and elasticities in the specified behavior dictionary.
+        
+    Note: chg_inc should not be adjusted to False unless specific use for distribution table
+    If integrating behavioral responses into distributional analysis, chg_inc
+    should = False only to give a proper analysis of pc_chgaftertax column of 
+    calc.difference_table() method; 
+    all other columns of this called method are only correct when chg_inc = True
 
     Note: this function internally modifies a copy of calc_2 records to account
       for behavioral responses that arise from the policy reform that involves
@@ -222,11 +228,14 @@ def response(calc_1, calc_2, elasticities, dump=False):
         df1 = calc1.dataframe(tc.DIST_VARIABLES)
     del calc1
     # Add behavioral-response changes to income sources
-    calc2_behv = copy.deepcopy(calc2)
-    del calc2
-    if not zero_sub_and_inc:
+    if chg_inc is True:
+       calc2_behv = copy.deepcopy(calc2)
+       if not zero_sub_and_inc:
         calc2_behv = _update_ordinary_income(si_chg, calc2_behv)
-    calc2_behv = _update_cap_gain_income(ltcg_chg, calc2_behv)
+        calc2_behv = _update_cap_gain_income(ltcg_chg, calc2_behv)
+    else:
+      calc2_behv = copy.deepcopy(calc2)
+    del calc2
     # Recalculate post-reform taxes incorporating behavioral responses
     calc2_behv.calc_all()
     # Extract dataframe from calc2_behv
