@@ -1830,7 +1830,8 @@ def CDCC_new(CDCC_new_c, CDCC_new_rt, CDCC_new_ps, CDCC_new_pe, CDCC_new_prt, cd
 @iterate_jit(nopython=True)
 def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
           c09200, payrolltax,
-          eitc, refund, iitax, combined, iradctc, fthbc, cdcc_new):
+          eitc, refund, iitax, combined, iradctc, fthbc, cdcc_new,
+          business_burden, Business_tax_combined):
     """
     Computes final taxes.
     """
@@ -1838,7 +1839,10 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
     refund = (eitc + c11070 + c10960 +
               personal_refundable_credit + ctc_new + rptc + iradctc + fthbc + cdcc_new)
     iitax = c09200 - refund
-    combined = iitax + payrolltax
+    if Business_tax_combined is True:
+        combined = iitax + payrolltax + business_burden
+    else:
+        combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)
 
 
@@ -2058,7 +2062,8 @@ def ExpandIncome(e00200, pencon_p, pencon_s, e00300, e00400, e00600,
 
 
 @iterate_jit(nopython=True)
-def AfterTaxIncome(combined, expanded_income, aftertax_income):
+def AfterTaxIncome(combined, expanded_income, aftertax_income,
+                   Business_tax_expinc, corp_taxliab):
     """
     Calculates after-tax expanded income.
 
@@ -2066,10 +2071,15 @@ def AfterTaxIncome(combined, expanded_income, aftertax_income):
     ----------
     combined: combined tax liability
     expanded_income: expanded income
+    corp_taxliab: imputed corporate tax liability
 
     Returns
     -------
     aftertax_income: expanded_income minus combined
     """
+    if Business_tax_expinc is True:
+        expanded_income = expanded_income + corp_taxliab
+    else:
+        expanded_income = expanded_income
     aftertax_income = expanded_income - combined
     return aftertax_income

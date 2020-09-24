@@ -1,0 +1,183 @@
+// ===========================================================#
+// Title: "Business_tax"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Implements off-model estimates for business tax provisions"
+          "Policy Parameters: Business_tax_combined, Business_tax_expinc"
+          "Input Variables: business_burden, corp_taxliab"
+// ===========================================================#
+
+// policy_current_law.json // lines 15029-15079
+
+"Business_tax_combined": {
+    "title": "Adds imputed burden from business side provisions to 'combined' taxpayer burden",
+    "description": "Specifies whether or not estimates of business tax provisions will be imputed to taxpayers.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Personal Income",
+    "section_2": "Business Tax Burden",
+    "indexable": false,
+    "indexed": false,
+    "type": "bool",
+    "value": [
+        {
+            "year": 2013,
+            "value": false
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": false,
+            "max": true
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+"Business_tax_expinc": {
+    "title": "Adds imputed corporate taxpayer liability to taxpayers' 'expanded_income'",
+    "description": "Specifies whether or not estimates of corporate tax liability will be imputed to taxpayers.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Personal Income",
+    "section_2": "Business Tax Burden",
+    "indexable": false,
+    "indexed": false,
+    "type": "bool",
+    "value": [
+        {
+            "year": 2013,
+            "value": false
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": false,
+            "max": true
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+
+// records_variables.json // lines 711-722
+
+"business_burden": {
+  "type": "float",
+  "desc": "imputed tax liability increase (to labor and capital) from off-model business tax estimates",
+  "form": {"2013-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+},
+"corp_taxliab": {
+  "type": "float",
+  "desc": "imputed corporate taxes paid; to add as an income factor when distributing business_burden",
+  "form": {"2021-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+// records.py // lines 427-483
+
+# IMPUTE BUSINESS TAX BURDEN TO TAXPAYERS
+# TAXPAYERS' SHARE OF LABOR (WAGES)
+self.wage_wt = ((self.e00200 * self.s006) /
+                       np.sum(self.e00200 * self.s006))
+self.wage_wt[self.e00200 > 0] = (
+    (self.e00200[self.e00200 > 0] * self.s006[self.e00200 > 0])
+    / np.sum(self.e00200[self.e00200 > 0] *
+             self.s006[self.e00200 > 0]))
+# DEFINE CAPITAL
+self.capital = self.p22250 + self.p23250 + self.e00650 + self.e00650 + self.e00300 + self.e02000
+# TAXPAYERS' SHARE OF CAPITAL
+self.capital_wt = ((self.capital * self.s006) /
+                       np.sum(self.capital * self.s006))
+self.capital_wt[self.capital > 0] = (
+    (self.capital[self.capital > 0] * self.s006[self.capital > 0])
+    / np.sum(self.capital[self.capital > 0] *
+             self.s006[self.capital > 0]))
+# DEFINE BUSINESS TAX REVENUE ESTIMATES
+# NOTE: VALUES ARE ESTIMATED OFF-MODEL (SEE /SOURCES)
+business_revenue = {
+    2021: 114037733124, 2022: 154486314216,
+    2023: 171784706273, 2024: 183008899259,
+    2025: 195045212729, 2026: 198328734051,
+    2027: 210771049353, 2028: 218942726249,
+    2029: 226670619075, 2030: 234353967252
+       }
+# DEFINE CORPORATE INCOME TAX REVENUE PROJECTIONS
+# NOTE: VALUES ARE BASELINE CORPORATE REVENUE ESTIMATES FROM CBO PROJ. (UPDATED 09/20)
+corp_tax_revenue = {
+    2021: 122754000000, 2022: 234076000000,
+    2023: 289276000000, 2024: 318899000000,
+    2025: 347329000000, 2026: 352277000000,
+    2027: 355589000000, 2028: 368086000000,
+    2029: 377565000000, 2030: 386582000000
+       }
+# ASSIGN BUSINESS TAX REVENUE ESTIMATES AND CORPORATE TAX LIABILITY TO TAXPAYERS
+# WE ASSIGN 20% OF THE CORPORATE INCOME TAX BURDEN TO LABOR (WAGES)
+wage_rev_share = 0.2 * business_revenue[year]
+corp_taxliab_wage_share = 0.2 * corp_tax_revenue[year]
+# WE ASSIGN 80% OF THE CORPORATE INCOME TAX BURDEN TO CAPITAL
+cap_rev_share = 0.8 * business_revenue[year]
+corp_taxliab_cap_share = 0.8 * corp_tax_revenue[year]
+# IMPUTE TO TAXPAYERS
+self.busburden_w = ((
+    self.wage_wt * wage_rev_share) /
+                       (self.s006))
+self.busburden_c = ((
+    self.capital_wt * cap_rev_share) /
+                       (self.s006))
+self.corp_taxliab_w = ((
+    self.wage_wt * corp_taxliab_wage_share) /
+                       (self.s006))
+self.corp_taxliab_c = ((
+    self.wage_wt * corp_taxliab_cap_share) /
+                       (self.s006))
+self.business_burden = self.busburden_w + self.busburden_c
+self.corp_taxliab = self.corp_taxliab_w + self.corp_taxliab_c
+
+// calcfunctions.py // lines 1830-1846 and 2064-2085
+
+@iterate_jit(nopython=True)
+def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
+          c09200, payrolltax,
+          eitc, refund, iitax, combined, iradctc, fthbc, cdcc_new,
+          business_burden, Business_tax_combined):
+    """
+    Computes final taxes.
+    """
+    eitc = c59660
+    refund = (eitc + c11070 + c10960 +
+              personal_refundable_credit + ctc_new + rptc + iradctc + fthbc + cdcc_new)
+    iitax = c09200 - refund
+    if Business_tax_combined is True:
+        combined = iitax + payrolltax + business_burden
+    else:
+        combined = iitax + payrolltax
+    return (eitc, refund, iitax, combined)
+
+@iterate_jit(nopython=True)
+def AfterTaxIncome(combined, expanded_income, aftertax_income,
+                   Business_tax_expinc, corp_taxliab):
+    """
+    Calculates after-tax expanded income.
+
+    Parameters
+    ----------
+    combined: combined tax liability
+    expanded_income: expanded income
+    corp_taxliab: imputed corporate tax liability
+
+    Returns
+    -------
+    aftertax_income: expanded_income minus combined
+    """
+    if Business_tax_expinc is True:
+        expanded_income = expanded_income + corp_taxliab
+    else:
+        expanded_income = expanded_income
+    aftertax_income = expanded_income - combined
+    return aftertax_income
+
+// calculator.py // NONE

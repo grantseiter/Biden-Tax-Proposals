@@ -423,7 +423,64 @@ class Records(Data):
             self.studloan_debt = ((
                 self.studloan_wt * total_studloan_debt[year]) /
                                    (self.s006))
-    
+            
+        # IMPUTE BUSINESS TAX BURDEN TO TAXPAYERS
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF LABOR (WAGES)
+            self.wage_wt = ((self.e00200 * self.s006) /
+                                   np.sum(self.e00200 * self.s006))
+            self.wage_wt[self.e00200 > 0] = (
+                (self.e00200[self.e00200 > 0] * self.s006[self.e00200 > 0])
+                / np.sum(self.e00200[self.e00200 > 0] *
+                         self.s006[self.e00200 > 0]))
+            # DEFINE CAPITAL
+            self.capital = self.p22250 + self.p23250 + self.e00650 + self.e00650 + self.e00300 + self.e02000
+            # TAXPAYERS' SHARE OF CAPITAL
+            self.capital_wt = ((self.capital * self.s006) /
+                                   np.sum(self.capital * self.s006))
+            self.capital_wt[self.capital > 0] = (
+                (self.capital[self.capital > 0] * self.s006[self.capital > 0])
+                / np.sum(self.capital[self.capital > 0] *
+                         self.s006[self.capital > 0]))
+            # DEFINE BUSINESS TAX REVENUE ESTIMATES
+            # NOTE: VALUES ARE ESTIMATED OFF-MODEL (SEE /SOURCES)
+            business_revenue = {
+                2021: 114037733124, 2022: 154486314216,
+                2023: 171784706273, 2024: 183008899259,
+                2025: 195045212729, 2026: 198328734051,
+                2027: 210771049353, 2028: 218942726249,
+                2029: 226670619075, 2030: 234353967252}
+            # DEFINE CORPORATE INCOME TAX REVENUE PROJECTIONS
+            # NOTE: VALUES ARE BASELINE CORPORATE REVENUE ESTIMATES FROM CBO PROJ. (UPDATED 09/20)
+            corp_tax_revenue = {
+                2021: 122754000000, 2022: 234076000000,
+                2023: 289276000000, 2024: 318899000000,
+                2025: 347329000000, 2026: 352277000000,
+                2027: 355589000000, 2028: 368086000000,
+                2029: 377565000000, 2030: 386582000000}
+            # ASSIGN BUSINESS TAX REVENUE ESTIMATES AND CORPORATE TAX LIABILITY TO TAXPAYERS
+            # WE ASSIGN 20% OF THE CORPORATE INCOME TAX BURDEN TO LABOR (WAGES)
+            wage_rev_share = 0.2 * business_revenue[year]
+            corp_taxliab_wage_share = 0.2 * corp_tax_revenue[year]
+            # WE ASSIGN 80% OF THE CORPORATE INCOME TAX BURDEN TO CAPITAL
+            cap_rev_share = 0.8 * business_revenue[year]
+            corp_taxliab_cap_share = 0.8 * corp_tax_revenue[year]
+            # IMPUTE TO TAXPAYERS
+            self.busburden_w = ((
+                self.wage_wt * wage_rev_share) /
+                                   (self.s006))
+            self.busburden_c = ((
+                self.capital_wt * cap_rev_share) /
+                                   (self.s006))
+            self.corp_taxliab_w = ((
+                self.wage_wt * corp_taxliab_wage_share) /
+                                   (self.s006))
+            self.corp_taxliab_c = ((
+                self.wage_wt * corp_taxliab_cap_share) /
+                                   (self.s006))
+            self.business_burden = self.busburden_w + self.busburden_c
+            self.corp_taxliab = self.corp_taxliab_w + self.corp_taxliab_c
+
         # remove local dictionary
         del gfv
 

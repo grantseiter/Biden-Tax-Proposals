@@ -15026,6 +15026,58 @@
             "cps": true
         }
     },
+    "Business_tax_combined": {
+        "title": "Adds imputed burden from business side provisions to 'combined' taxpayer burden",
+        "description": "Specifies whether or not estimates of business tax provisions will be imputed to taxpayers.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Personal Income",
+        "section_2": "Business Tax Burden",
+        "indexable": false,
+        "indexed": false,
+        "type": "bool",
+        "value": [
+            {
+                "year": 2013,
+                "value": false
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": false,
+                "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "Business_tax_expinc": {
+        "title": "Adds imputed corporate taxpayer liability to taxpayers' 'expanded_income'",
+        "description": "Specifies whether or not estimates of corporate tax liability will be imputed to taxpayers.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Personal Income",
+        "section_2": "Business Tax Burden",
+        "indexable": false,
+        "indexed": false,
+        "type": "bool",
+        "value": [
+            {
+                "year": 2013,
+                "value": false
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": false,
+                "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
     "LLC_Expense_c": {
         "title": "Lifetime learning credit expense limit",
         "description": "The maximum expense eligible for lifetime learning credit, per child.",
