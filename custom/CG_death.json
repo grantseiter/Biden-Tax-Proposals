@@ -5,7 +5,6 @@
 // Notes: "Tax unrealized capital gains at death"
           "Policy Parameters: CG_death, CG_death_ec"
           "Input Variables: taxable_gains_at_death, gains_at_death"
-          "CALCFUNCS LINES 305-347"
 // ===========================================================#
 
 // policy_current_law.json
@@ -85,7 +84,7 @@
     }
 },
 
-// records_variables.json // lines 651-662
+// records_variables.json
 
 "taxable_gains_at_death": {
   "type": "float",
@@ -100,19 +99,20 @@
   "availability": "taxdata_puf"
 }
 
-// records.py // lines 343-360
+// records.py
 
 # CAPITAL GAINS AT DEATH
 if year >= 2021:
     # TAXPAYERS' SHARE OF CAPITAL GAINS
-    self.ltgains_wt = ((self.p23250 * self.s006) / ## CHECK THIS LINE FOR DEBUGGING
+    self.ltgains_wt = ((self.p23250 * self.s006) /
                            np.sum(self.p23250 * self.s006))
     self.ltgains_wt[self.p23250 > 0] = (
         (self.p23250[self.p23250 > 0] * self.s006[self.p23250 > 0])
         / np.sum(self.p23250[self.p23250 > 0] *
                  self.s006[self.p23250 > 0]))
+    self.ltgains_wt[self.p23250 <= 0] = 0
     # ASSIGN TOTAL REALIZATION AT DEATH TO TAXPAYERS
-    # NOTE: VALUES ARE JCT CAP GAINS TAX EXPENDITURES FOR EXCLUSION AT DEATH/EMT
+    # NOTE: VALUES ARE JCT CAP GAINS TAX EXPENDITURES FOR EXCLUSION AT DEATH/EMTR
     realization_at_death = {
         2021: 204253570343, 2022: 215627184994,
         2023: 226688939254, 2024: 235220544654,
@@ -123,7 +123,7 @@ if year >= 2021:
         self.ltgains_wt * realization_at_death[year]) /
                            (self.s006))
 
-// calcfunctions.py // lines 305-347
+// calcfunctions.py
 
 @iterate_jit(nopython=True)
 def CapGains(p23250, p22250, sep, ALD_StudentLoan_hc,

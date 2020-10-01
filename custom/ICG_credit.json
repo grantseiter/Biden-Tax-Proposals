@@ -12,7 +12,7 @@
           care needs. (Source: Biden Proposals and S.1443 — 116th Congress)
 // ===========================================================#
 
-// policy_current_law.json // lines 14899-15002
+// policy_current_law.json
 
 "ICG_credit_c": {
     "title": "Maximum nonrefundable informal caregiver credit",
@@ -134,30 +134,40 @@
   "availability": "taxdata_puf, taxdata_cps"
 }
 
-// records.py // lines 385-402
+// records.py
 
 # NONREFUNDABLE INFORMAL CAREGIVER CREDIT
 if year >= 2021:
     # TAXPAYERS' SHARE OF DEPENDENT CARE EXPENSES
-    self.icg_wt = ((self.e32800 * self.s006) /
-                                     np.sum(self.e32800 * self.s006))
-    self.icg_wt[self.elderly_dependents > 0] = (
-              (self.e32800[self.elderly_dependents > 0] * self.s006[self.elderly_dependents > 0])
-              / np.sum(self.e32800[self.elderly_dependents > 0] *
-                        self.s006[self.elderly_dependents > 0]))
+    self.icg_adj_wt = ((self.e32800 * self.s006) /
+                           np.sum(self.e32800 * self.s006))
+    self.icg_eld_wt = ((self.e32800 * self.s006) /
+                           np.sum(self.e32800 * self.s006))
+    self.icg_eld_wt[self.elderly_dependents>0] = (
+        (self.e32800[self.elderly_dependents>0] * self.s006[self.elderly_dependents>0])
+        / np.sum(self.e32800[self.elderly_dependents>0] *
+                 self.s006[self.elderly_dependents>0]))
+    self.icg_eld_wt[self.elderly_dependents<=0] = 0
     # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
     # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
-    total_icg_expense = {
-        2021: 15330530358, 2022: 16039044992,
-        2023: 16693971464, 2024: 17417016043,
-        2025: 18188757516, 2026: 19000636164,
-        2027: 19840423814, 2028: 20677693900,
-        2029: 21488133939, 2030: 22314470601}
-    self.icg_expense = ((
-        self.icg_wt * total_icg_expense[year]) /
-                           (self.s006))
+    icg_elderly_expense = {
+        2021: 7649546932, 2022: 8003077816,
+        2023: 8329869562, 2024: 8690650520,
+        2025: 9075729998, 2026: 9480836910,
+        2027: 9899869709, 2028: 10317646307,
+        2029: 10722035390, 2030: 11134356486}
+    icg_adjusted_expense = {
+        2021: 1912386733, 2022: 2000769454,
+        2023: 2082467390, 2024: 2172662630,
+        2025: 2268932499, 2026: 2370209228,
+        2027: 2474967427, 2028: 2579411577,
+        2029: 2680508847, 2030: 2783589121}
+    self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year])/
+                    (self.s006)) +
+                    (self.icg_adj_wt * icg_adjusted_expense[year])/
+                    (self.s006))
 
-// calcfunctions.py // lines 1413-1437 and 1691-1696 and 1742, 1750
+// calcfunctions.py
 
 @iterate_jit(nopython=True)
 def ICGTaxCredit(earned_p, earned_s, MARS, ICG_credit_c, ICG_credit_em,
@@ -275,7 +285,7 @@ def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
     c09200 = othertaxes + tax_net_nonrefundable_credits
     return (c07100, othertaxes, c09200)
 
-// calculator.py // lines 23 and 1429
+// calculator.py
 
 from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
                                    NetInvIncTax, AMT, EI_PayrollTax, Adj,

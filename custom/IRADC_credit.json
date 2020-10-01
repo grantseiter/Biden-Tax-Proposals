@@ -5,6 +5,9 @@
 // Notes: "Refundable retirement savings credit"
           "Policy Parameters: IRADC_credit_c, IRADC_credit_rt"
           "Input Variables: rrstc"
+// Desc:  Replaces the deduction for worker contributions to traditional
+          IRAs and defined-contribution pensions with a refundable credit
+          at a rate of 26 percent.
 // ===========================================================#
 
 // policy_current_law.json

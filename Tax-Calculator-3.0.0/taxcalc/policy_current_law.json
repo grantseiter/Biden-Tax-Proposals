@@ -14698,6 +14698,32 @@
             "cps": true
         }
     },
+    "AutoIRA_credit": {
+        "title": "Provide for Automatic Enrollment in Individual Retirement Accounts or Annuities",
+        "description": "Specifies whether or not a credit for automatic enrollment in IRAs will be imputed to taxpayers.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Automatic Enrollment in IRA",
+        "indexable": false,
+        "indexed": false,
+        "type": "bool",
+        "value": [
+            {
+                "year": 2013,
+                "value": false
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": false,
+                "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
     "FTHB_credit": {
         "title": "First time homebuyers' credit estimates will be imputed to taxpayers",
         "description": "Specifies whether or not estimates of the first time homebuyers' credit will be imputed to taxpayers.",
@@ -14717,6 +14743,79 @@
             "range": {
                 "min": false,
                 "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "FTHB_credit_c": {
+          "title": "Maximum first time homebuyers'credit",
+          "description": "This is the maximum amount of the first time homebuyers'credit",
+          "notes": "This parameter is not reflected in current law.",
+          "section_1": "Refundable Credits",
+          "section_2": "First Time Homebuyers' Credit",
+          "indexable": true,
+          "indexed": true,
+          "type": "float",
+          "value": [
+              {
+                  "year": 2013,
+                  "value": 9e+99
+              }
+          ],
+          "validators": {
+              "range": {
+                  "min": 0,
+                  "max": 9e+99
+              }
+          },
+          "compatible_data": {
+              "puf": true,
+              "cps": true
+          }
+      },
+    "FTHB_credit_e": {
+        "title": "First time homebuyers' credit maximum AGI",
+        "description": "For taxpayers with AGI over this amount, the credit is eliminated.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Refundable Credits",
+        "section_2": "First Time Homebuyers' Credit",
+        "indexable": true,
+        "indexed": true,
+        "type": "float",
+        "value": [
+            {
+                "year": 2013,
+                "MARS": "single",
+                "value": 0.0
+            },
+            {
+                "year": 2013,
+                "MARS": "mjoint",
+                "value": 0.0
+            },
+            {
+                "year": 2013,
+                "MARS": "mseparate",
+                "value": 0.0
+            },
+            {
+                "year": 2013,
+                "MARS": "headhh",
+                "value": 0.0
+            },
+            {
+                "year": 2013,
+                "MARS": "widow",
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 9e+99
             }
         },
         "compatible_data": {

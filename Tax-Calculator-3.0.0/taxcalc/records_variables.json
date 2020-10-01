@@ -708,6 +708,18 @@
       "form": {"2021-20??": "imputed estimates in records.py"},
       "availability": "taxdata_puf, taxdata_cps"
     },
+    "iratc": {
+      "type": "float",
+      "desc": "automatic ira credit",
+      "form": {"2013-20??": "calculated variable"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
+    "ira_credit": {
+      "type": "float",
+      "desc": "Imputed automatic ira credit",
+      "form": {"2021-20??": "imputed estimates in records.py"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
     "business_burden": {
       "type": "float",
       "desc": "imputed tax liability increase (to labor and capital) from off-model business tax estimates",

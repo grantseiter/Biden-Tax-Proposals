@@ -1406,15 +1406,21 @@ def IRADCTaxCredit(e03150, e03300, IRADC_credit_c, IRADC_credit_rt, iradctc):
     return (iradctc)
 
 @iterate_jit(nopython=True)
-def FTHBTaxCredit(FTHB_credit, fthbc, fthb_credit_amt):
+def FTHBTaxCredit(MARS, FTHB_credit, FTHB_credit_c, c00100,
+                  FTHB_credit_e, fthbc, fthb_credit_amt):
     """
     Computes refundable first time homebuyers' tax credit amount.
     """
-    # not reflected in current law and records modified with imputation
     if FTHB_credit is True:
-      fthbc = max(0., fthb_credit_amt)
-    else:
-      fthbc = 0.
+        # max credit
+        fthbc = max(0., min(FTHB_credit_c, fthb_credit_amt))
+        # eliminated based on agi
+        positiveagiamt = max(c00100, 0.)
+        fthb_max_agi = FTHB_credit_e[MARS - 1]
+        if positiveagiamt <= fthb_max_agi:
+            fthbc = fthbc
+        else:
+            fthbc = 0.
     return (fthbc)
 
 @iterate_jit(nopython=True)
@@ -1443,6 +1449,19 @@ def ICGTaxCredit(earned_p, earned_s, MARS, ICG_credit_c, ICG_credit_em,
     else:
       icgtc = 0.
     return icgtc
+
+@iterate_jit(nopython=True)
+def IRATaxCredit(earned_p, earned_s, MARS, AutoIRA_credit, ira_credit,
+                 c05800, e07300, iratc):
+    """
+    Computes nonrefundable automatic enrollment in IRA tax credit.
+    """
+    # not reflected in current law and records modified with imputation
+    if AutoIRA_credit is True:
+        iratc = max(0., ira_credit)
+    else:
+        iratc = 0.
+    return iratc
 
 @iterate_jit(nopython=True)
 def AmOppCreditParts(exact, e87521, num, c00100, CR_AmOppRefundable_hc,
@@ -1637,7 +1656,7 @@ def CharityCredit(e19800, e20100, c00100, CR_Charity_rt, CR_Charity_f,
 @iterate_jit(nopython=True)
 def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
                          e07600, p08000, odc,
-                         personal_nonrefundable_credit, icgtc,
+                         personal_nonrefundable_credit, icgtc, iratc,
                          CR_RetirementSavings_hc, CR_ForeignTax_hc,
                          CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
                          CR_MinimumTax_hc, CR_OtherCredits_hc, charity_credit,
@@ -1699,9 +1718,12 @@ def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
     # ICG credit
     icgtc = min(icgtc, avail)
     avail = avail - icgtc
+    # IRA credit
+    iratc = min(iratc, avail)
+    avail = avail - iratc
     return (c07180, c07200, c07220, c07230, c07240, odc,
             c07260, c07300, c07400, c07600, c08000, charity_credit,
-            personal_nonrefundable_credit, icgtc)
+            personal_nonrefundable_credit, icgtc, iratc)
 
 
 @iterate_jit(nopython=True)
@@ -1747,7 +1769,7 @@ def AdditionalCTC(codtc_limited, ACTC_c, n24, earned, ACTC_Income_thd,
 def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
           c07400, c07600, c08000, e09700, e09800, e09900, niit, othertaxes,
           c07100, c09200, odc, charity_credit,
-          personal_nonrefundable_credit, icgtc):
+          personal_nonrefundable_credit, icgtc, iratc):
     """
     Computes total used nonrefundable credits, c07100, othertaxes, and
     income tax before refundable credits, c09200.
@@ -1755,7 +1777,7 @@ def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
     # total used nonrefundable credits (as computed in NonrefundableCredits)
     c07100 = (c07180 + c07200 + c07600 + c07300 + c07400 + c07220 + c08000 +
               c07230 + c07240 + c07260 + odc + charity_credit +
-              personal_nonrefundable_credit + icgtc)
+              personal_nonrefundable_credit + icgtc + iratc)
     # tax after credits (2016 Form 1040, line 56)
     tax_net_nonrefundable_credits = max(0., c05800 - c07100)
     # tax (including othertaxes) before refundable credits

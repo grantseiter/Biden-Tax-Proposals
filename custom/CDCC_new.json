@@ -11,7 +11,7 @@
           $400,000 will qualify for partial credits.
 // ===========================================================#
 
-// policy_current_law.json // lines 14727-14898
+// policy_current_law.json
 
 "CDCC_new_c": {
     "title": "Maximum new child & dependent care refundable credit per dependent (max of CDCC_new_c*2 for two or more children)",
@@ -186,7 +186,7 @@
         }
     },
 
-// records_variables.json // lines 681-686
+// records_variables.json
 
 "cdcc_new": {
   "type": "float",
@@ -195,9 +195,9 @@
   "availability": "taxdata_puf, taxdata_cps"
 }
 
-// records.py // lines NONE
+// records.py
 
-// calcfunctions.py // lines 1761-1790 and 1795, 1801
+// calcfunctions.py
 
 @iterate_jit(nopython=True)
 def CDCC_new(CDCC_new_c, CDCC_new_rt, CDCC_new_ps, CDCC_new_pe, CDCC_new_prt, cdcc_new,
@@ -245,7 +245,7 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
     combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)
 
-// calculator.py // lines 20 and 1438
+// calculator.py
 
 from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
                                    NetInvIncTax, AMT, EI_PayrollTax, Adj,

@@ -1,12 +1,12 @@
 // ===========================================================#
-// Title: "qbided-cfn"
+// Title: "PT_qbid"
 // File_Author: "Grant M. Seiter -- American Enterprise Institute"
 // Date: "September 2020"
 // Notes: "Calculate qualified business income deduction"
           "Policy Parameters: PT_qbid_taxinc_thd, PT_qbid_taxinc_gap"
 // ===========================================================#
 
-// policy_current_law.json // lines 11828-12271
+// policy_current_law.json
 
 "PT_qbid_taxinc_thd": {
     "title": "Lower threshold of pre-QBID taxable income",
@@ -453,7 +453,7 @@
     }
 },
 
-// calcfunctions.py // lines 796-820
+// calcfunctions.py
 
 @iterate_jit(nopython=True)
 def TaxInc(c00100, standard, c04470, c04600, MARS, e00900, e26270,

@@ -349,6 +349,7 @@ class Records(Data):
                 (self.p23250[self.p23250 > 0] * self.s006[self.p23250 > 0])
                 / np.sum(self.p23250[self.p23250 > 0] *
                          self.s006[self.p23250 > 0]))
+            self.ltgains_wt[self.p23250 <= 0] = 0
             # ASSIGN TOTAL REALIZATION AT DEATH TO TAXPAYERS
             # NOTE: VALUES ARE JCT CAP GAINS TAX EXPENDITURES FOR EXCLUSION AT DEATH/EMTR
             realization_at_death = {
@@ -366,43 +367,49 @@ class Records(Data):
             # TAXPAYERS' SHARE OF FIRST TIME HOMEBUYERS CREDIT
             self.fthb_wt = ((self.e00200 * self.s006) /
                                    np.sum(self.e00200 * self.s006))
-            self.fthb_wt[self.e00200 > 0] = (
-                (self.e00200[self.e00200 > 0] * self.s006[self.e00200 > 0])
-                / np.sum(self.e00200[self.e00200 > 0] *
-                         self.s006[self.e00200 > 0]))
             # ASSIGN FIRST TIME HOMEBUYERS' CREDIT TO TAXPAYERS
             # NOTE: VALUES ARE CALCULATED FROM WEIGHTED CREDIT VALUES (e11580) FROM 2009 CPS MATCHED PUF
             total_fthb_credit = {
-                2021: 44615366880, 2022: 46677307310,
-                2023: 48583293870, 2024: 50687519778,
-                2025: 52933464841, 2026: 55296218306,
-                2027: 57740193384, 2028: 60176841770,
-                2029: 62535408554, 2030: 64940238163}
+                2021: 36235503285, 2022: 36477386218,
+                2023: 36757344598, 2024: 37063748107,
+                2025: 37366413299, 2026: 37631279957,
+                2027: 37873993627, 2028: 38094000484,
+                2029: 38307915270, 2030: 38515184160}
             self.fthb_credit_amt = ((
                 self.fthb_wt * total_fthb_credit[year]) /
-                                   (self.s006))
-            
+                            (self.s006))
+                
         # NONREFUNDABLE INFORMAL CAREGIVER CREDIT
         if year >= 2021:
             # TAXPAYERS' SHARE OF DEPENDENT CARE EXPENSES
-            self.icg_wt = ((self.e32800 * self.s006) /
-                                     np.sum(self.e32800 * self.s006))
-            self.icg_wt[self.elderly_dependents > 0] = (
-                      (self.e32800[self.elderly_dependents > 0] * self.s006[self.elderly_dependents > 0])
-                      / np.sum(self.e32800[self.elderly_dependents > 0] *
-                                self.s006[self.elderly_dependents > 0]))
+            self.icg_adj_wt = ((self.e32800 * self.s006) /
+                                   np.sum(self.e32800 * self.s006))
+            self.icg_eld_wt = ((self.e32800 * self.s006) /
+                                   np.sum(self.e32800 * self.s006))
+            self.icg_eld_wt[self.elderly_dependents>0] = (
+                (self.e32800[self.elderly_dependents>0] * self.s006[self.elderly_dependents>0])
+                / np.sum(self.e32800[self.elderly_dependents>0] *
+                         self.s006[self.elderly_dependents>0]))
+            self.icg_eld_wt[self.elderly_dependents<=0] = 0
             # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
             # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
-            total_icg_expense = {
-                2021: 15330530358, 2022: 16039044992,
-                2023: 16693971464, 2024: 17417016043,
-                2025: 18188757516, 2026: 19000636164,
-                2027: 19840423814, 2028: 20677693900,
-                2029: 21488133939, 2030: 22314470601}
-            self.icg_expense = ((
-                self.icg_wt * total_icg_expense[year]) /
-                                   (self.s006))
-
+            icg_elderly_expense = {
+                2021: 7649546932, 2022: 8003077816,
+                2023: 8329869562, 2024: 8690650520,
+                2025: 9075729998, 2026: 9480836910,
+                2027: 9899869709, 2028: 10317646307,
+                2029: 10722035390, 2030: 11134356486}
+            icg_adjusted_expense = {
+                2021: 1912386733, 2022: 2000769454,
+                2023: 2082467390, 2024: 2172662630,
+                2025: 2268932499, 2026: 2370209228,
+                2027: 2474967427, 2028: 2579411577,
+                2029: 2680508847, 2030: 2783589121}
+            self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year])/
+                            (self.s006)) +
+                            (self.icg_adj_wt * icg_adjusted_expense[year])/
+                            (self.s006))
+            
         # STUDENT LOAN DEBT FORGIVENESS
         if year >= 2021:
             # TAXPAYERS' SHARE OF FORGIVEN STUDENT LOANS
@@ -415,13 +422,34 @@ class Records(Data):
             # ASSIGN FORGIVEN STUDENT LOANS TO TAXPAYERS
             # NOTE: VALUES ARE CALCULATED FROM PUBLIC SERVICE LOAN FORGIVENESS DATA, FSAID US DOE.
             total_studloan_debt = {
-                2021: 153198852, 2022: 160279079,
-                2023: 166823796, 2024: 174049221,
-                2025: 181761277, 2026: 189874426,
-                2027: 198266471, 2028: 206633358,
-                2029: 214732131, 2030: 222989760}
+                2021: 4975784446, 2022: 5205744925,
+                2023: 5418312454, 2024: 5652988873,
+                2025: 5903470698, 2026: 6166979725,
+                2027: 6439547095, 2028: 6711297345,
+                2029: 6974339448, 2030: 7242541070}
             self.studloan_debt = ((
                 self.studloan_wt * total_studloan_debt[year]) /
+                            (self.s006))
+
+        # AUTOMATIC ENROLLMENT IN IRAs CREDIT
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF INVESTMENT INCOME
+            self.autoira_wt = ((self.e58990 * self.s006) /
+                                             np.sum(self.e58990 * self.s006))
+            self.autoira_wt[self.e58990 > 0] = (
+                          (self.e58990[self.e58990 > 0] * self.s006[self.e58990 > 0])
+                          / np.sum(self.e58990[self.e58990 > 0] *
+                                    self.s006[self.e58990 > 0]))
+            # ASSIGN CREDIT TO TAXPAYERS
+            # NOTE: VALUES ARE CALCULATED FROM JCT ESTIMATES, SEE /SOURCES FOR MORE.
+            total_autoira_credit = {
+                2021: 1536000000, 2022: 1606987660,
+                2023: 1672606203, 2024: 1745049650,
+                2025: 1822372148, 2026: 1903716079,
+                2027: 1987856276, 2028: 2071744231,
+                2029: 2152944025, 2030: 2235736536}
+            self.ira_credit = ((
+                self.autoira_wt * total_autoira_credit[year]) /
                                    (self.s006))
             
         # IMPUTE BUSINESS TAX BURDEN TO TAXPAYERS
@@ -445,11 +473,11 @@ class Records(Data):
             # DEFINE BUSINESS TAX REVENUE ESTIMATES
             # NOTE: VALUES ARE ESTIMATED OFF-MODEL (SEE /SOURCES)
             business_revenue = {
-                2021: 114037733124, 2022: 154486314216,
-                2023: 171784706273, 2024: 183008899259,
-                2025: 195045212729, 2026: 198328734051,
-                2027: 210771049353, 2028: 218942726249,
-                2029: 226670619075, 2030: 234353967252}
+                2021: 175598795234, 2022: 152920952040,
+                2023: 171354346844, 2024: 183109348468,
+                2025: 195411078716, 2026: 198933433969,
+                2027: 211610303777, 2028: 220027985881,
+                2029: 228211335814, 2030: 236808677430}
             # DEFINE CORPORATE INCOME TAX REVENUE PROJECTIONS
             # NOTE: VALUES ARE BASELINE CORPORATE REVENUE ESTIMATES FROM CBO PROJ. (UPDATED 09/20)
             corp_tax_revenue = {

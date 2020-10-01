@@ -6,10 +6,10 @@
           "Policy Parameters: StudentLoan_em"
           "Input Variables: sldf, studloan_debt"
 // Desc:  Biden excludes debt forgiven through the income-based repayment
-          plan from taxable income.(Source: Biden Proposals )
+          plan from taxable income.(Source: Biden Proposals)
 // ===========================================================#
 
-// policy_current_law.json // lines 15003-15028
+// policy_current_law.json
 
 "StudentLoan_em": {
     "title": "Forgiven student loan debt will be excluded from taxable income",
@@ -38,7 +38,7 @@
     }
 },
 
-// records_variables.json // lines 699-710
+// records_variables.json
 
 "sldf": {
   "type": "float",
@@ -53,7 +53,7 @@
   "availability": "taxdata_puf, taxdata_cps"
 }
 
-// records.py // lines 406-425
+// records.py
 
 # STUDENT LOAN DEBT FORGIVENESS
 if year >= 2021:
@@ -67,16 +67,16 @@ if year >= 2021:
     # ASSIGN FORGIVEN STUDENT LOANS TO TAXPAYERS
     # NOTE: VALUES ARE CALCULATED FROM PUBLIC SERVICE LOAN FORGIVENESS DATA, FSAID US DOE.
     total_studloan_debt = {
-        2021: 153198852, 2022: 160279079,
-        2023: 166823796, 2024: 174049221,
-        2025: 181761277, 2026: 189874426,
-        2027: 198266471, 2028: 206633358,
-        2029: 214732131, 2030: 222989760}
+        2021: 4975784446, 2022: 5205744925,
+        2023: 5418312454, 2024: 5652988873,
+        2025: 5903470698, 2026: 6166979725,
+        2027: 6439547095, 2028: 6711297345,
+        2029: 6974339448, 2030: 7242541070}
     self.studloan_debt = ((
         self.studloan_wt * total_studloan_debt[year]) /
-                           (self.s006))
+                    (self.s006))
 
-// calcfunctions.py // lines 803 and 854-867
+// calcfunctions.py
 
 @iterate_jit(nopython=True)
 def TaxInc(c00100, standard, c04470, c04600, MARS, e00900, e26270,
