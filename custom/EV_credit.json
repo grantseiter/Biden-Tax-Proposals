@@ -1,0 +1,333 @@
+// ===========================================================#
+// Title: "EV_credit"
+// File_Author: "Grant M. Seiter -- American Enterprise Institute"
+// Date: "September 2020"
+// Notes: "Nonrefundable Full-Electric Vehicle Tax Credit"
+          "Policy Parameters: EV_credit, EV_credit_c, EV_credit_ps, EV_credit_prt"
+          "Input Variables: ev_credit_amt, evtc"
+// Desc:  Restore the Full Plug-In Electric Vehicle Tax Credit (IRC 30D). We assume the proposal
+          makes the credit permanent, repeals the manufacturer cap as in the American Recovery
+          And Reinvestment Tax Act Of 2009 and phases out with AGI less than 250000.
+          The cap remains 7500 and
+          https://www.irs.gov/businesses/plug-in-electric-vehicle-credit-irc-30-and-irc-30d
+// ===========================================================#
+
+// policy_current_law.json
+
+"EV_credit": {
+    "title": "Full-electric vehicle credit estimates will be imputed to taxpayers",
+    "description": "Specifies whether or not estimates of the full-electric vehicle credit will be imputed to taxpayers.",
+    "notes": "This parameter is not reflected in current law.",
+    "section_1": "Nonrefundable Credits",
+    "section_2": "Full-Electric Vehicle Tax Credit",
+    "indexable": false,
+    "indexed": false,
+    "type": "bool",
+    "value": [
+        {
+            "year": 2013,
+            "value": false
+        }
+    ],
+    "validators": {
+        "range": {
+            "min": false,
+            "max": true
+        }
+    },
+    "compatible_data": {
+        "puf": true,
+        "cps": true
+    }
+},
+"EV_credit_c": {
+      "title": "Maximum full-electric vehicle credit",
+      "description": "This is the maximum amount of the first time homebuyers'credit",
+      "notes": "This parameter is not reflected in current law.",
+      "section_1": "Nonrefundable Credits",
+      "section_2": "Full-Electric Vehicle Tax Credit",
+      "indexable": true,
+      "indexed": false,
+      "type": "float",
+      "value": [
+          {
+              "year": 2013,
+              "value": 9e+99
+          }
+      ],
+      "validators": {
+          "range": {
+              "min": 0,
+              "max": 9e+99
+          }
+      },
+      "compatible_data": {
+          "puf": true,
+          "cps": true
+      }
+  },
+  "EV_credit_ps": {
+      "title": "Full-electric vehicle credit phaseout start",
+      "description": "For taxpayers with AGI over this amount, the credit is reduced.",
+      "notes": "This parameter is not reflected in current law.",
+      "section_1": "Nonrefundable Credits",
+      "section_2": "Full-Electric Vehicle Tax Credit",
+      "indexable": true,
+      "indexed": false,
+      "type": "float",
+      "value": [
+          {
+              "year": 2013,
+              "MARS": "single",
+              "value": 0.0
+          },
+          {
+              "year": 2013,
+              "MARS": "mjoint",
+              "value": 0.0
+          },
+          {
+              "year": 2013,
+              "MARS": "mseparate",
+              "value": 0.0
+          },
+          {
+              "year": 2013,
+              "MARS": "headhh",
+              "value": 0.0
+          },
+          {
+              "year": 2013,
+              "MARS": "widow",
+              "value": 0.0
+          }
+      ],
+      "validators": {
+          "range": {
+              "min": 0,
+              "max": 9e+99
+          }
+      },
+      "compatible_data": {
+          "puf": true,
+          "cps": true
+      }
+  },
+  "EV_credit_prt": {
+      "title": "Full-electric vehicle credit phaseout rate",
+      "description": "The total amount for the full-electric vehicle credit is reduced at this rate per dollar exceeding the phaseout starting agi.",
+      "notes": "This parameter is not reflected in current law.",
+      "section_1": "Nonrefundable Credits",
+      "section_2": "Full-Electric Vehicle Tax Credit",
+      "indexable": false,
+      "indexed": false,
+      "type": "float",
+      "value": [
+          {
+              "year": 2013,
+              "value": 0.0
+          }
+      ],
+      "validators": {
+          "range": {
+              "min": 0,
+              "max": 1
+          }
+      },
+      "compatible_data": {
+          "puf": true,
+          "cps": true
+      }
+  },
+
+// records_variables.json
+
+"evtc": {
+  "type": "float",
+  "desc": "Nonrefundable full-electric vehicle credit for taxpayer",
+  "form": {"2013-20??": "calculated variable"},
+  "availability": "taxdata_puf, taxdata_cps"
+},
+"ev_credit_amt": {
+  "type": "float",
+  "desc": "Imputed  full-electric vehicle credit",
+  "form": {"2021-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+}
+
+// records.py
+
+# NONREFUNDABLE FULL-ELECTRIC VEHICLE CREDIT
+if year >= 2021:
+    # TAXPAYERS' SHARE OF FULL-ELECTRIC VEHICLE CREDIT CAPPED
+    self.ev_wt = ((self.e00200 * self.s006) /
+                           np.sum(self.e00200 * self.s006))
+
+    self.ev_wt[self.e00200 < 400000] = (
+         (self.e00200[self.e00200 < 400000] * self.s006[self.e00200 < 400000])
+         / np.sum(self.e00200[self.e00200 < 400000] *
+                  self.s006[self.e00200 < 400000]))
+    self.ev_wt[self.e00200 >= 400000] = 0
+    # ASSIGN FULL-ELECTRIC VEHICLE CREDIT TO TAXPAYERS
+    # NOTE: VALUES ARE PROJECTED OFF-MODEL SEE /SOURCES FOR MORE
+    total_ev_credit = {
+        2021: 1927126854, 2022: 1971463216,
+        2023: 2064758865, 2024: 2267898548,
+        2025: 2490472020, 2026: 2564513631,
+        2027: 2656101550, 2028: 2784290330,
+        2029: 2951747632, 2030: 3179428781}
+    self.ev_credit_amt = ((
+        self.ev_wt * total_ev_credit[year])
+
+// calcfunctions.py
+
+@iterate_jit(nopython=True)
+def EVTaxCredit(EV_credit, ev_credit_amt, EV_credit_c, c00100, EV_credit_ps, MARS,
+                EV_credit_prt, evtc):
+    """
+    Computes nonrefundable full-electric vehicle tax credit.
+    """
+    if EV_credit is True:
+      # not reflected in current law and records modified with imputation
+      elecv_credit = max(0., min(ev_credit_amt, EV_credit_c))
+      # phaseout based on agi
+        posevagi = max(c00100, 0.)
+        ev_max = EV_credit_ps[MARS - 1]
+        if posevagi < ev_max:
+            evtc = elecv_credit
+        else:
+            evtc_reduced = max(0., evtc - EV_credit_prt * (posevagi - ev_max))
+            evtc = min(evtc, evtc_reduced)
+    return evtc
+
+
+    @iterate_jit(nopython=True)
+    def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
+                             e07600, p08000, odc,
+                             personal_nonrefundable_credit, icgtc, evtc,
+                             CR_RetirementSavings_hc, CR_ForeignTax_hc,
+                             CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
+                             CR_MinimumTax_hc, CR_OtherCredits_hc, charity_credit,
+                             c07180, c07200, c07220, c07230, c07240,
+                             c07260, c07300, c07400, c07600, c08000):
+        """
+        NonRefundableCredits function sequentially limits credits to tax liability.
+
+        Parameters
+        ----------
+        CR_RetirementSavings_hc: Retirement savings credit haircut
+        CR_ForeignTax_hc: Foreign tax credit haircut
+        CR_ResidentialEnergy_hc: Residential energy credit haircut
+        CR_GeneralBusiness_hc: General business credit haircut
+        CR_MinimumTax_hc: Minimum tax credit haircut
+        CR_OtherCredits_hc: Other credits haircut
+        """
+        # limit tax credits to tax liability in order they are on 2015 1040 form
+        avail = c05800
+        # Foreign tax credit - Form 1116
+        c07300 = min(e07300 * (1. - CR_ForeignTax_hc), avail)
+        avail = avail - c07300
+        # Child & dependent care expense credit
+        c07180 = min(c07180, avail)
+        avail = avail - c07180
+        # Education tax credit
+        c07230 = min(c07230, avail)
+        avail = avail - c07230
+        # Retirement savings credit - Form 8880
+        c07240 = min(e07240 * (1. - CR_RetirementSavings_hc), avail)
+        avail = avail - c07240
+        # Child tax credit
+        c07220 = min(c07220, avail)
+        avail = avail - c07220
+        # Other dependent credit
+        odc = min(odc, avail)
+        avail = avail - odc
+        # Residential energy credit - Form 5695
+        c07260 = min(e07260 * (1. - CR_ResidentialEnergy_hc), avail)
+        avail = avail - c07260
+        # General business credit - Form 3800
+        c07400 = min(e07400 * (1. - CR_GeneralBusiness_hc), avail)
+        avail = avail - c07400
+        # Prior year minimum tax credit - Form 8801
+        c07600 = min(e07600 * (1. - CR_MinimumTax_hc), avail)
+        avail = avail - c07600
+        # Schedule R credit
+        c07200 = min(c07200, avail)
+        avail = avail - c07200
+        # Other credits
+        c08000 = min(p08000 * (1. - CR_OtherCredits_hc), avail)
+        avail = avail - c08000
+        # Charity Credit
+        charity_credit = min(charity_credit, avail)
+        avail = avail - charity_credit
+        # Personal nonrefundable credit
+        personal_nonrefundable_credit = min(personal_nonrefundable_credit, avail)
+        avail = avail - personal_nonrefundable_credit
+        # ICG credit
+        icgtc = min(icgtc, avail)
+        avail = avail - icgtc
+        # EV credit
+        evtc = min(evtc, avail)
+        avail = avail - evtc
+        return (c07180, c07200, c07220, c07230, c07240, odc,
+                c07260, c07300, c07400, c07600, c08000, charity_credit,
+                personal_nonrefundable_credit, icgtc, evtc)
+
+@iterate_jit(nopython=True)
+def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
+          c07400, c07600, c08000, e09700, e09800, e09900, niit, othertaxes,
+          c07100, c09200, odc, charity_credit,
+          personal_nonrefundable_credit, icgtc, evtc):
+    """
+    Computes total used nonrefundable credits, c07100, othertaxes, and
+    income tax before refundable credits, c09200.
+    """
+    # total used nonrefundable credits (as computed in NonrefundableCredits)
+    c07100 = (c07180 + c07200 + c07600 + c07300 + c07400 + c07220 + c08000 +
+              c07230 + c07240 + c07260 + odc + charity_credit +
+              personal_nonrefundable_credit + icgtc + evtc)
+    # tax after credits (2016 Form 1040, line 56)
+    tax_net_nonrefundable_credits = max(0., c05800 - c07100)
+    # tax (including othertaxes) before refundable credits
+    othertaxes = e09700 + e09800 + e09900 + niit
+    c09200 = othertaxes + tax_net_nonrefundable_credits
+    return (c07100, othertaxes, c09200)
+
+// calculator.py
+
+from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
+                                   NetInvIncTax, AMT, EI_PayrollTax, Adj,
+                                   DependentCare, ALD_InvInc_ec_base, CapGains,
+                                   SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
+                                   StdDed, AdditionalMedicareTax, F2441, EITC,
+                                   RefundablePayrollTaxCredit,
+                                   ChildDepTaxCredit, AdditionalCTC, CTC_new, CDCC_new,
+                                   PersonalTaxCredit, IRADCTaxCredit, FTHBTaxCredit, SchR,
+                                   AmOppCreditParts, EducationTaxCredit,
+                                   CharityCredit, ICGTaxCredit, EVTaxCredit,
+                                   NonrefundableCredits, C1040, IITAX,
+                                   BenefitSurtax, BenefitLimitation,
+                                   FairShareTax, LumpSumTax, BenefitPrograms,
+                                   ExpandIncome, AfterTaxIncome)
+
+ # Calculate taxes with optimal itemized deduction
+ self._taxinc_to_amt()
+ F2441(self.__policy, self.__records)
+ EITC(self.__policy, self.__records)
+ RefundablePayrollTaxCredit(self.__policy, self.__records)
+ PersonalTaxCredit(self.__policy, self.__records)
+ IRADCTaxCredit(self.__policy, self.__records)
+ FTHBTaxCredit(self.__policy, self.__records)
+ ICGTaxCredit(self.__policy, self.__records)
+ EVTaxCredit(self.__policy, self.__records)
+ AmOppCreditParts(self.__policy, self.__records)
+ SchR(self.__policy, self.__records)
+ EducationTaxCredit(self.__policy, self.__records)
+ CharityCredit(self.__policy, self.__records)
+ ChildDepTaxCredit(self.__policy, self.__records)
+ NonrefundableCredits(self.__policy, self.__records)
+ AdditionalCTC(self.__policy, self.__records)
+ C1040(self.__policy, self.__records)
+ CTC_new(self.__policy, self.__records)
+ CDCC_new(self.__policy, self.__records)
+ IITAX(self.__policy, self.__records)

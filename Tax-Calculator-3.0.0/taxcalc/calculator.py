@@ -20,7 +20,7 @@ from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
                                    ChildDepTaxCredit, AdditionalCTC, CTC_new, CDCC_new,
                                    PersonalTaxCredit, IRADCTaxCredit, FTHBTaxCredit, SchR,
                                    AmOppCreditParts, EducationTaxCredit,
-                                   CharityCredit, ICGTaxCredit, IRATaxCredit,
+                                   CharityCredit, ICGTaxCredit, IRATaxCredit, EVTaxCredit,
                                    NonrefundableCredits, C1040, IITAX,
                                    BenefitSurtax, BenefitLimitation,
                                    FairShareTax, LumpSumTax, BenefitPrograms,
@@ -1428,6 +1428,7 @@ class Calculator():
         FTHBTaxCredit(self.__policy, self.__records)
         ICGTaxCredit(self.__policy, self.__records)
         IRATaxCredit(self.__policy, self.__records)
+        EVTaxCredit(self.__policy, self.__records)
         AmOppCreditParts(self.__policy, self.__records)
         SchR(self.__policy, self.__records)
         EducationTaxCredit(self.__policy, self.__records)

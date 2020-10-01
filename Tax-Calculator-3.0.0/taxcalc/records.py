@@ -405,11 +405,32 @@ class Records(Data):
                 2025: 2268932499, 2026: 2370209228,
                 2027: 2474967427, 2028: 2579411577,
                 2029: 2680508847, 2030: 2783589121}
-            self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year])/
-                            (self.s006)) +
-                            (self.icg_adj_wt * icg_adjusted_expense[year])/
+            self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year]) +
+                        (self.icg_adj_wt * icg_adjusted_expense[year]))
+                            
+        # NONREFUNDABLE FULL-ELECTRIC VEHICLE CREDIT
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF FULL-ELECTRIC VEHICLE CREDIT CAPPED
+            self.ev_wt = ((self.e00200 * self.s006) /
+                                   np.sum(self.e00200 * self.s006))
+
+            self.ev_wt[self.e00200 < 400000] = (
+                 (self.e00200[self.e00200 < 400000] * self.s006[self.e00200 < 400000])
+                 / np.sum(self.e00200[self.e00200 < 400000] *
+                          self.s006[self.e00200 < 400000]))
+            self.ev_wt[self.e00200 >= 400000] = 0
+            # ASSIGN FULL-ELECTRIC VEHICLE CREDIT TO TAXPAYERS
+            # NOTE: VALUES ARE PROJECTED OFF-MODEL SEE /SOURCES FOR MORE
+            total_ev_credit = {
+                2021: 1927126854, 2022: 1971463216,
+                2023: 2064758865, 2024: 2267898548,
+                2025: 2490472020, 2026: 2564513631,
+                2027: 2656101550, 2028: 2784290330,
+                2029: 2951747632, 2030: 3179428781}
+            self.ev_credit_amt = ((
+                self.ev_wt * total_ev_credit[year])/
                             (self.s006))
-            
+           
         # STUDENT LOAN DEBT FORGIVENESS
         if year >= 2021:
             # TAXPAYERS' SHARE OF FORGIVEN STUDENT LOANS

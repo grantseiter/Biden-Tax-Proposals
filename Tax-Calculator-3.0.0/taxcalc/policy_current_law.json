@@ -15099,6 +15099,131 @@
             "cps": true
         }
     },
+    "EV_credit": {
+        "title": "Full-electric vehicle credit estimates will be imputed to taxpayers",
+        "description": "Specifies whether or not estimates of the full-electric vehicle credit will be imputed to taxpayers.",
+        "notes": "This parameter is not reflected in current law.",
+        "section_1": "Nonrefundable Credits",
+        "section_2": "Full-Electric Vehicle Tax Credit",
+        "indexable": false,
+        "indexed": false,
+        "type": "bool",
+        "value": [
+            {
+                "year": 2013,
+                "value": false
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": false,
+                "max": true
+            }
+        },
+        "compatible_data": {
+            "puf": true,
+            "cps": true
+        }
+    },
+    "EV_credit_c": {
+          "title": "Maximum full-electric vehicle credit",
+          "description": "This is the maximum amount of the first time homebuyers'credit",
+          "notes": "This parameter is not reflected in current law.",
+          "section_1": "Nonrefundable Credits",
+          "section_2": "Full-Electric Vehicle Tax Credit",
+          "indexable": true,
+          "indexed": false,
+          "type": "float",
+          "value": [
+              {
+                  "year": 2013,
+                  "value": 9e+99
+              }
+          ],
+          "validators": {
+              "range": {
+                  "min": 0,
+                  "max": 9e+99
+              }
+          },
+          "compatible_data": {
+              "puf": true,
+              "cps": true
+          }
+      },
+      "EV_credit_ps": {
+          "title": "Full-electric vehicle credit phaseout start",
+          "description": "For taxpayers with AGI over this amount, the credit is reduced.",
+          "notes": "This parameter is not reflected in current law.",
+          "section_1": "Nonrefundable Credits",
+          "section_2": "Full-Electric Vehicle Tax Credit",
+          "indexable": true,
+          "indexed": false,
+          "type": "float",
+          "value": [
+              {
+                  "year": 2013,
+                  "MARS": "single",
+                  "value": 0.0
+              },
+              {
+                  "year": 2013,
+                  "MARS": "mjoint",
+                  "value": 0.0
+              },
+              {
+                  "year": 2013,
+                  "MARS": "mseparate",
+                  "value": 0.0
+              },
+              {
+                  "year": 2013,
+                  "MARS": "headhh",
+                  "value": 0.0
+              },
+              {
+                  "year": 2013,
+                  "MARS": "widow",
+                  "value": 0.0
+              }
+          ],
+          "validators": {
+              "range": {
+                  "min": 0,
+                  "max": 9e+99
+              }
+          },
+          "compatible_data": {
+              "puf": true,
+              "cps": true
+          }
+      },
+      "EV_credit_prt": {
+          "title": "Full-electric vehicle credit phaseout rate",
+          "description": "The total amount for the full-electric vehicle credit is reduced at this rate per dollar exceeding the phaseout starting agi.",
+          "notes": "This parameter is not reflected in current law.",
+          "section_1": "Nonrefundable Credits",
+          "section_2": "Full-Electric Vehicle Tax Credit",
+          "indexable": false,
+          "indexed": false,
+          "type": "float",
+          "value": [
+              {
+                  "year": 2013,
+                  "value": 0.0
+              }
+          ],
+          "validators": {
+              "range": {
+                  "min": 0,
+                  "max": 1
+              }
+          },
+          "compatible_data": {
+              "puf": true,
+              "cps": true
+          }
+    },
     "StudentLoan_em": {
         "title": "Forgiven student loan debt will be excluded from taxable income",
         "description": "Specifies whether or not forgiven student loan debt will be excluded from taxable income.",

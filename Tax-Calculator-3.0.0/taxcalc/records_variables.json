@@ -720,6 +720,18 @@
       "form": {"2021-20??": "imputed estimates in records.py"},
       "availability": "taxdata_puf, taxdata_cps"
     },
+    "evtc": {
+      "type": "float",
+      "desc": "Nonrefundable full-electric vehicle credit for taxpayer",
+      "form": {"2013-20??": "calculated variable"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
+    "ev_credit_amt": {
+      "type": "float",
+      "desc": "Imputed  full-electric vehicle credit",
+      "form": {"2021-20??": "imputed estimates in records.py"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
     "business_burden": {
       "type": "float",
       "desc": "imputed tax liability increase (to labor and capital) from off-model business tax estimates",
