@@ -162,10 +162,8 @@ if year >= 2021:
         2025: 2268932499, 2026: 2370209228,
         2027: 2474967427, 2028: 2579411577,
         2029: 2680508847, 2030: 2783589121}
-    self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year])/
-                    (self.s006)) +
-                    (self.icg_adj_wt * icg_adjusted_expense[year])/
-                    (self.s006))
+    self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year]) +
+                        (self.icg_adj_wt * icg_adjusted_expense[year]))
 
 // calcfunctions.py
 
