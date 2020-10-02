@@ -394,19 +394,20 @@ class Records(Data):
             # ASSIGN DEPENDENT CARE EXPENSES TO TAXPAYERS
             # NOTE: VALUES ARE CALCULATED FROM PROJECTION OF EXP FOR LT CARE SERVICES FOR THE ELDERLY, CBO 1999.
             icg_elderly_expense = {
-                2021: 7649546932, 2022: 8003077816,
-                2023: 8329869562, 2024: 8690650520,
-                2025: 9075729998, 2026: 9480836910,
-                2027: 9899869709, 2028: 10317646307,
-                2029: 10722035390, 2030: 11134356486}
+                2021: 58471879287, 2022: 61174211248,
+                2023: 63672153635, 2024: 66429903978,
+                2025: 69373388203, 2026: 72469958848,
+                2027: 75672976680, 2028: 78866392318,
+                2029: 81957475995, 2030: 85109190672}
             icg_adjusted_expense = {
-                2021: 1912386733, 2022: 2000769454,
-                2023: 2082467390, 2024: 2172662630,
-                2025: 2268932499, 2026: 2370209228,
-                2027: 2474967427, 2028: 2579411577,
-                2029: 2680508847, 2030: 2783589121}
-            self.icg_expense = ((self.icg_adj_wt * icg_elderly_expense[year]) +
-                        (self.icg_adj_wt * icg_adjusted_expense[year]))
+                2021: 14617969822, 2022: 15293552812,
+                2023: 15918038409, 2024: 16607475995,
+                2025: 17343347051, 2026: 18117489712,
+                2027: 18918244170, 2028: 19716598080,
+                2029: 20489368999, 2030: 21277297668}
+            self.icg_expense = (((self.icg_adj_wt * icg_elderly_expense[year]) +
+                        (self.icg_adj_wt * icg_adjusted_expense[year]))/
+                            (self.s006))
                             
         # NONREFUNDABLE FULL-ELECTRIC VEHICLE CREDIT
         if year >= 2021:
@@ -529,7 +530,30 @@ class Records(Data):
                                    (self.s006))
             self.business_burden = self.busburden_w + self.busburden_c
             self.corp_taxliab = self.corp_taxliab_w + self.corp_taxliab_c
-
+            
+        # IMPUTE ESTATE AND GIFT TAX BURDEN TO TAXPAYERS
+        if year >= 2021:
+            # TAXPAYERS' SHARE OF WAGES > 500000
+            self.estate_wt = ((self.e00200 * self.s006) /
+                                   np.sum(self.e00200 * self.s006))
+            self.estate_wt[self.e00200 > 500000] = (
+                (self.e00200[self.e00200 > 500000] * self.s006[self.e00200 > 500000])
+                / np.sum(self.e00200[self.e00200 > 500000] *
+                         self.s006[self.e00200 > 500000]))
+            self.estate_wt[self.e00200 <= 500000] = 0
+            # DEFINE ESTATE AND GIFT TAX REVENUE ESTIMATES
+            # NOTE: VALUES ARE ESTIMATED OFF-MODEL (SEE /SOURCES)
+            estate_gift_revenue = {
+                2021: 26175000000, 2022: 27650000000,
+                2023: 29091500000, 2024: 30599500000,
+                2025: 31819646325, 2026: 30809910031,
+                2027: 25247444835, 2028: 23859507263,
+                2029: 24998461561, 2030: 26191784831}
+            # IMPUTE TO TAXPAYERS
+            self.estate_burden = ((
+                self.estate_wt * estate_gift_revenue[year]) /
+                                   (self.s006))
+    
         # remove local dictionary
         del gfv
 

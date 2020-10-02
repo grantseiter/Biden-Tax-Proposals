@@ -1875,7 +1875,7 @@ def CDCC_new(CDCC_new_c, CDCC_new_rt, CDCC_new_ps, CDCC_new_pe, CDCC_new_prt, cd
 def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
           c09200, payrolltax,
           eitc, refund, iitax, combined, iradctc, fthbc, cdcc_new,
-          business_burden, Business_tax_combined):
+          business_burden, estate_burden, Business_tax_combined):
     """
     Computes final taxes.
     """
@@ -1884,7 +1884,7 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
               personal_refundable_credit + ctc_new + rptc + iradctc + fthbc + cdcc_new)
     iitax = c09200 - refund
     if Business_tax_combined is True:
-        combined = iitax + payrolltax + business_burden
+        combined = iitax + payrolltax + business_burden + estate_burden
     else:
         combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)

@@ -4,7 +4,7 @@
 // Date: "September 2020"
 // Notes: "Implements off-model estimates for business tax provisions"
           "Policy Parameters: Business_tax_combined, Business_tax_expinc"
-          "Input Variables: business_burden, corp_taxliab"
+          "Input Variables: business_burden, estate_burden, corp_taxliab"
 // ===========================================================#
 
 // policy_current_law.json
@@ -67,6 +67,12 @@
 "business_burden": {
   "type": "float",
   "desc": "imputed tax liability increase (to labor and capital) from off-model business tax estimates",
+  "form": {"2013-20??": "imputed estimates in records.py"},
+  "availability": "taxdata_puf, taxdata_cps"
+},
+"estate_burden": {
+  "type": "float",
+  "desc": "imputed tax liability increase from off-model estate and gift tax estimates",
   "form": {"2013-20??": "imputed estimates in records.py"},
   "availability": "taxdata_puf, taxdata_cps"
 },
@@ -136,13 +142,36 @@ if year >= 2021:
     self.business_burden = self.busburden_w + self.busburden_c
     self.corp_taxliab = self.corp_taxliab_w + self.corp_taxliab_c
 
+# IMPUTE ESTATE AND GIFT TAX BURDEN TO TAXPAYERS
+if year >= 2021:
+    # TAXPAYERS' SHARE OF WAGES > 500000
+    self.estate_wt = ((self.e00200 * self.s006) /
+                           np.sum(self.e00200 * self.s006))
+    self.estate_wt[self.e00200 > 500000] = (
+        (self.e00200[self.e00200 > 500000] * self.s006[self.e00200 > 500000])
+        / np.sum(self.e00200[self.e00200 > 500000] *
+                 self.s006[self.e00200 > 500000]))
+    self.estate_wt[self.e00200 <= 500000] = 0
+    # DEFINE ESTATE AND GIFT TAX REVENUE ESTIMATES
+    # NOTE: VALUES ARE ESTIMATED OFF-MODEL (SEE /SOURCES)
+    estate_gift_revenue = {
+        2021: 26175000000, 2022: 27650000000,
+        2023: 29091500000, 2024: 30599500000,
+        2025: 31819646325, 2026: 30809910031,
+        2027: 25247444835, 2028: 23859507263,
+        2029: 24998461561, 2030: 26191784831}
+    # IMPUTE TO TAXPAYERS
+    self.estate_burden = ((
+        self.estate_wt * estate_gift_revenue[year]) /
+                           (self.s006))
+
 // calcfunctions.py
 
 @iterate_jit(nopython=True)
 def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
           c09200, payrolltax,
           eitc, refund, iitax, combined, iradctc, fthbc, cdcc_new,
-          business_burden, Business_tax_combined):
+          business_burden, estate_burden, Business_tax_combined):
     """
     Computes final taxes.
     """
@@ -151,7 +180,7 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new, rptc,
               personal_refundable_credit + ctc_new + rptc + iradctc + fthbc + cdcc_new)
     iitax = c09200 - refund
     if Business_tax_combined is True:
-        combined = iitax + payrolltax + business_burden
+        combined = iitax + payrolltax + business_burden + estate_burden
     else:
         combined = iitax + payrolltax
     return (eitc, refund, iitax, combined)

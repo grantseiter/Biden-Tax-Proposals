@@ -738,6 +738,12 @@
       "form": {"2013-20??": "imputed estimates in records.py"},
       "availability": "taxdata_puf, taxdata_cps"
     },
+    "estate_burden": {
+      "type": "float",
+      "desc": "imputed tax liability increase from off-model estate and gift tax estimates",
+      "form": {"2013-20??": "imputed estimates in records.py"},
+      "availability": "taxdata_puf, taxdata_cps"
+    },
     "corp_taxliab": {
       "type": "float",
       "desc": "imputed corporate taxes paid; to add as an income factor when distributing business_burden",
