@@ -1,1 +1,0 @@
-fc ogusa_example_output.csv expected_ogusa_example_output.csv

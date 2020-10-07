@@ -1,2 +1,0 @@
-ignore:
-  - "./cs-config/**/*"  # ignore folders and all its contents
