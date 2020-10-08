@@ -12,3 +12,10 @@ analysis of USA federal income and payroll taxes.
 
 Complete documentation is available
 [here](https://PSLmodels.github.io/Tax-Calculator/).
+
+# Note:
+
+This subdirectory contains a modified version of Tax-Calculator release 2.9.0 used in an American Enterprise Institute study on the revenue effects of Joe Biden’s tax proposals.
+
+“[An Analysis of Joe Biden’s Tax Proposals](https://www.aei.org/research-products/report/an-analysis-of-joe-bidens-tax-proposals/),” Kyle Pomerleau, Jason DeBacker, and Richard W. Evans,
+AEI Report, American Enterprise Institute (June 15, 2020).
